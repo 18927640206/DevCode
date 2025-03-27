@@ -38,15 +38,16 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB){
         return pedidoProducto
     }
 
-    fun addProducto(pedido: Pedido, producto: Producto, contadorDeProductos: Int) {
+    fun addProducto(pedido: Pedido, producto: Producto) {
         val sql = "INSERT INTO pedido_detalles (id_pedido, id_producto, id_modificacion, precio_unitario) VALUES (?, ?, ?, ?)"
+        val hola = obtenerUltimoPedidoDeProducto(pedido) + 1
 
         try {
             conexion.obtenerConexion()?.use { conn ->
                 conn.prepareStatement(sql).use { consulta ->
                     consulta.setInt(1, pedido.id)
                     consulta.setInt(2, producto.id)
-                    consulta.setInt(3, contadorDeProductos)
+                    consulta.setInt(3, hola)
                     consulta.setFloat(4, producto.precio)
 
                     val rowsAffected = consulta.executeUpdate()

@@ -96,7 +96,7 @@ class InterfazDeUsuario() : Screen {
                                         producto = producto,
                                         onAddToCart = {
                                             contador++
-                                            productoController.agregarProductoAPedido(pedido, producto, contador)
+                                            productoController.agregarProductoAPedido(pedido, producto)
                                             productospedido = productoController.pedirPedidoProductos(pedido)
                                         }
                                     )
@@ -124,7 +124,7 @@ class InterfazDeUsuario() : Screen {
                                         producto = producto,
                                         onAddToCart = {
                                             contador++
-                                            productoController.agregarProductoAPedido(pedido, producto, contador)
+                                            productoController.agregarProductoAPedido(pedido, producto)
                                             productospedido = productoController.pedirPedidoProductos(pedido)
                                         }
                                     )
