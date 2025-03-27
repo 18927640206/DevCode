@@ -1,11 +1,13 @@
 package org.luisitobez.burgerved.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,47 +17,40 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-/*
-import org.luisitobez.burgerved.model.data.IngredienteDAOImpl
-import org.luisitobez.burgerved.model.data.PedidoDAOImpl
-import org.luisitobez.burgerved.model.data.PedidoProductoDAOImpl
-import org.luisitobez.burgerved.model.data.ProductoDAOImpl
-import org.luisitobez.burgerved.model.domain.PedidoProductos*/
-
-import org.luisitobez.burgerved.model.domain.Producto
 import org.luisitobez.burgerved.controller.AppController
-import org.luisitobez.burgerved.model.domain.Pedido
+import org.luisitobez.burgerved.model.domain.PedidoProductos
 
-
-class InterfazDeUsuario(val ped: Pedido, val estado:Int, val carrito: List<Producto>) : Screen {
+class InterfazDeUsuario() : Screen {
     @Composable
     override fun Content() {
-
         val appController = remember { AppController() }
         val productoController = appController.productoController
         val carritoController = appController.carritoController
-        /*
-        val productoDAO = remember { ProductoDAOImpl() }
-        val pedidoDetalleDAO = remember { PedidoProductoDAOImpl() }
-        val pedidoDAO = remember { PedidoDAOImpl() }*/
-
-        var pedido by remember { mutableStateOf(ped) }
-        var carrito by remember { mutableStateOf(carrito) }
-       /* val ingredientesDAO by remember { mutableStateOf(IngredienteDAOImpl()) }
-        val pedidoProducto = remember { mutableStateOf(PedidoProductos(0, 0, 0, 0.0f)) }*/
+        var pedido by rememberSaveable { mutableStateOf(carritoController.agregarPedido()) }
         val navigator = LocalNavigator.currentOrThrow
+        var contador by rememberSaveable { mutableStateOf(0) }
+        var productospedido by remember { mutableStateOf<List<PedidoProductos>>(emptyList()) }
+        var precioTotal by remember { mutableStateOf(0.0f) }
 
+        var notificarDescuento by remember { mutableStateOf("") }
+        var pedidoConDescuento by rememberSaveable { mutableStateOf(pedido) }
+        var montoAhorrado by rememberSaveable { mutableStateOf(0f) }
+        var totalConDescuento by rememberSaveable { mutableStateOf(0f) }
 
-        val numProductos = /*productoDAOproductoController.getNumeroDeProductos()?.numeroDeProductos ?: 0*/ productoController.obtenerTodosProductos().size
-        var precioTotal = carrito.sumOf { it.precio.toDouble() }.toFloat()
+        // Obtener productos y bebidas
+        val productos = productoController.obtenerTodosProductos()
+        val bebidas = productoController.obtenerTodasBebidas()
 
+        productospedido = productoController.pedirPedidoProductos(pedido)
 
-        LaunchedEffect(Unit) {
-            carritoController.agregarPedido(pedido)
-            //pedidoDAO.addPedido(pedido)
-            //pedido = pedidoDAO.getPedido()!!
+        // Actualizar el precio total cuando cambie la lista de productos
+        LaunchedEffect(productospedido) {
+            precioTotal = productospedido.sumOf { it.precioUnitario.toDouble() }.toFloat()
+
+            pedidoConDescuento = carritoController.aplicarDescuento(pedido.copy(total_pago = precioTotal), contador)
+            montoAhorrado = pedidoConDescuento.montoAhorrado
+            totalConDescuento = pedidoConDescuento.total_pago
         }
-
 
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFFF28001)),
@@ -78,47 +73,125 @@ class InterfazDeUsuario(val ped: Pedido, val estado:Int, val carrito: List<Produ
             }
 
             // Panel central
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
-                    .padding(16.dp)
+                    .padding(5.dp)
             ) {
-                // Panel de productos
-                LazyColumn(
+                // Fila superior: Paneles de productos y carrito
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp)
-                ) {
-                    val productos = productoController.obtenerTodosProductos()
-                    items(productos) { producto ->
-                        ProductoItem(
-                            producto = producto,
-                            onAddToCart = {
+                        .fillMaxWidth()
+                        .weight(1f) // Ocupa el espacio restante
+                        .border(width = 2.dp, color = Color.Black)
 
-                              productoController.agregarProductoAPedido(pedido, producto)
-                                //carrito = carrito + producto
-                               // precioTotal += producto.precio
+                ) {
+                    // Panel de productos
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
+                    ) {
+                        // Lista de productos
+                        LazyColumn(
+                            modifier = Modifier.weight(2f)
+                                .border(width = 1.dp, color = Color.Black)
+                                .padding(5.dp)
+                        ) {
+                            items(productos) { producto ->
+                                if (producto.categoria != "Bebida") {
+                                    ProductoItem(
+                                        producto = producto,
+                                        onAddToCart = {
+                                            contador++
+                                            productoController.agregarProductoAPedido(pedido, producto, contador)
+                                            productospedido = productoController.pedirPedidoProductos(pedido)
+                                            notificarDescuento = carritoController.notificarDescuento(contador)
+                                        }
+                                    )
+                                }
                             }
-                        )
+                        }
 
+                        // Nuevo panel inferior (debajo del panel de productos)
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f) // Un tercio de la altura
+                                .padding(top = 16.dp) // Espacio entre los paneles
+                                .background(Color(0xFFF28001)),
+                            //color = Color(0xFF042E46)) // Color de fondo
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier.weight(1f)
+                                    .background(Color(0xFFF28001))
+                                    .border(width = 1.dp, color = Color.Black)
+                                    .padding(5.dp)
+                            ) {
+                                items(bebidas) { producto ->
+                                    PanelBebidas(
+                                        producto = producto,
+                                        onAddToCart = {
+                                            contador++
+                                            productoController.agregarProductoAPedido(pedido, producto, contador)
+                                            productospedido = productoController.pedirPedidoProductos(pedido)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Panel del carrito
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(width = 2.dp, color = Color.Black)
+                            .padding(5.dp)
+                            .fillMaxHeight()
+                    ) {
+                        items(productospedido) { producto ->
+                            CarritoItem(
+                                productopedido = producto,
+                                onRemove = {
+                                    try {
+                                        productoController.eliminarProductoAPedido(producto)
+                                        productospedido = productoController.pedirPedidoProductos(pedido)
+                                    } catch (e: Exception) {
+                                        println("Error al eliminar el producto del pedido: ${e.message}")
+                                    }
+                                },
+                                onIngredientesClick = {
+                                    productoController.obtenerProductoPorId("${producto.idProducto}")?.let {
+                                        navigator.push(
+                                            SeleccionIngrediente(
+                                                it,
+                                                pedido,
+                                                producto
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
+            }
 
-                // Panel del carrito
-                LazyColumn(
+            //Notificacion de descuento
+            if (notificarDescuento.isNotEmpty()) {
+                Text(
+                    text = notificarDescuento,
+                    color = Color.Green,
+                    fontSize = 18.sp,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                ) {
-                    items(carrito) { producto ->
-                        CarritoItem(
-                            producto = producto,
-                            onRemove = { carrito = carrito - producto },
-                            onIngredientesClick = { println("Mostrar ingredientes de ${producto.nombre}") }
-                        )
-                    }
-                }
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .background(Color(0xFF042E46).copy(alpha = 0.7f))
+                        .padding(8.dp),
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             // Panel de pago
@@ -126,27 +199,41 @@ class InterfazDeUsuario(val ped: Pedido, val estado:Int, val carrito: List<Produ
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF042E46))
-                    .padding(16.dp),
+                    .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    carrito = emptyList()
-                    //pedidoDAO.borrarPedido(pedido)
-                   // pedidoDAO.addPedido(pedido)
-                    //pedido = pedidoDAO.getPedido()!!
                     precioTotal = 0.0f
                     carritoController.eliminarPedido(pedido)
-                    carritoController.agregarPedido(pedido)
+                    pedido = appController.pedidoController.agregarPedido()!!
+                    productospedido = productoController.pedirPedidoProductos(pedido)
                 }) {
                     Text("Cancelar", fontSize = 24.sp)
                 }
-                Text(
-                    text = "Total a pagar $${precioTotal}",
-                    fontSize = 24.sp,
-                    color = Color.White
-                )
-                Button(onClick = { navigator.push(PaymentUI(precioTotal, pedido, carrito)) }) {
+                Column {
+                    Text(
+                        text = "Precio: $${precioTotal}",
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Descuento: $${montoAhorrado}",
+                        fontSize = 20.sp,
+                        color = Color.White,
+                    )
+                    Text(
+                        text = "Total a pagar: $${totalConDescuento}",
+                        fontSize = 24.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Button(onClick = {
+                    pedido.total_pago = totalConDescuento
+                    carritoController.actualizarPrecioPedido(pedido, totalConDescuento)
+                    navigator.push(PaymentUI(pedido, montoAhorrado))
+                }) {
                     Text("Pagar", fontSize = 24.sp)
                 }
             }

@@ -5,8 +5,8 @@ import org.luisitobez.burgerved.model.domain.IngredientesExtra
 import org.luisitobez.burgerved.model.domain.PedidoProductos
 import java.sql.SQLException
 
-class IngredientesExtraDAOImpl {
-    private val conexion = ConexionDB()
+class IngredientesExtraDAOImpl(private val conexion: ConexionDB) {
+
 
     fun getIngredientesExtraById(pedidoProducto: PedidoProductos, ingrediente: Ingrediente): IngredientesExtra? {
         val sql = "SELECT * FROM Ingredientes_Extra WHERE id_pedido = ? AND id_modificacion = ? AND id_ingrediente = ?"
@@ -38,7 +38,11 @@ class IngredientesExtraDAOImpl {
         return ingredientesExtra
     }
 
-    fun addIngredienteExtra(pedidoProducto: PedidoProductos, idIngrediente: Int, cantidad: Int) {
+    fun addIngredienteExtra(
+        pedidoProducto: PedidoProductos,
+        idIngrediente: Int,
+        cantidad: Int
+    ) {
         val sql = "INSERT INTO Ingredientes_Extra (id_pedido, id_modificacion, id_ingrediente, cantidad) VALUES (?,?,?,?)"
 
         try {
