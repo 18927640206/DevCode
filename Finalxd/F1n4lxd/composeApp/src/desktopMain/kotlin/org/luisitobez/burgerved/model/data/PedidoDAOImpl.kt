@@ -2,6 +2,7 @@ package org.luisitobez.burgerved.model.data;
 
 import org.luisitobez.burgerved.model.domain.Pedido
 import java.sql.SQLException
+import java.sql.Statement
 
 class PedidoDAOImpl (private val conexion : ConexionDB){
     //private val conexion = ConexionDB()
@@ -32,21 +33,59 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
         return pedido
     }
 
-    fun addPedido(pedido: Pedido) {
-        val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago) VALUES (?,?,?)"
+    fun addPedido(): Pedido {
+        // Crear un pedido con valores iniciales
+        val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f)
+
+        val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago) VALUES (?, ?, ?)"
+        var generatedId: Int? = null
+
+        // Obtener la conexión una sola vez
+        val conn = conexion.obtenerConexion()
+        if (conn == null) {
+            println("Error: No se pudo obtener la conexión a la base de datos.")
+            return pedido
+        }
+
         try {
-            conexion.obtenerConexion()?.use { conn ->
-                conn.prepareStatement(sql).use { consulta ->
-                    consulta.setString(1, pedido.estado)
-                    consulta.setString(2, pedido.metodo_pago)
-                    consulta.setFloat(3, pedido.total_pago)
-                    val rowsAffected = consulta.executeUpdate()
-                    println(if (rowsAffected > 0) "Pedido guardado exitosamente." else "No se pudo guardar el pedido.")
+            conn.autoCommit = false // Desactivar autocommit
+
+            conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { consulta ->
+                consulta.setString(1, pedido.estado)
+                consulta.setString(2, pedido.metodo_pago)
+                consulta.setFloat(3, pedido.total_pago)
+
+                val rowsAffected = consulta.executeUpdate()
+
+                if (rowsAffected > 0) {
+                    // Recuperar el ID generado
+                    consulta.generatedKeys.use { keys ->
+                        if (keys.next()) {
+                            generatedId = keys.getInt(1)
+                            println("Pedido guardado exitosamente. ID: $generatedId")
+                        }
+                    }
+                    conn.commit() // Confirmar la transacción
+                } else {
+                    conn.rollback() // Revertir la transacción
+                    println("No se pudo guardar el pedido.")
                 }
             }
         } catch (ex: SQLException) {
-            println("Error al guardar el pedido: ${ex.message}")
+            conn.rollback() // Revertir en caso de error
+            println("Error de base de datos al guardar el pedido: ${ex.message}")
             ex.printStackTrace()
+        } finally {
+            conn.autoCommit = true // Restaurar autocommit
+            conn.close() // Cerrar la conexión
+        }
+
+        // Actualizar el pedido con el ID generado
+        return if (generatedId != null) {
+            pedido.copy(id = generatedId!!)
+        } else {
+            println("No se generó un ID para el pedido.")
+            pedido
         }
     }
 
@@ -93,18 +132,37 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
             ex.printStackTrace()
         }
     }
-    fun actualizarEstadoPedido(idPedido: Int, estado: String) {
-        val sql = "UPDATE Pedido SET estado = ? WHERE id_pedido = ?"
+
+    fun actualizarEstadoPedido(idPedido: Int, estado: String, metodoPago: String) {
+        val sql = "UPDATE Pedido SET estado = ?, metodo_pago = ? WHERE id_pedido = ?"
         try {
             conexion.obtenerConexion()?.use { conn ->
                 conn.prepareStatement(sql).use { ps ->
                     ps.setString(1, estado)
-                    ps.setInt(2, idPedido)
+                    ps.setString(2, metodoPago)
+                    ps.setInt(3, idPedido)
                     ps.executeUpdate()
                 }
             }
         } catch (ex: SQLException) {
             println("Error al actualizar el estado del pedido: ${ex.message}")
+            ex.printStackTrace()
+
+        }
+    }
+
+    fun actualizarCostoPedido(idPedido: Int, costo: Float) {
+        val sql = "UPDATE Pedido SET total_pago = ? WHERE id_pedido = ?"
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { ps ->
+                    ps.setFloat(1, costo)
+                    ps.setInt(2, idPedido)
+                    ps.executeUpdate()
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al actualizar el costo del pedido: ${ex.message}")
             ex.printStackTrace()
 
         }
