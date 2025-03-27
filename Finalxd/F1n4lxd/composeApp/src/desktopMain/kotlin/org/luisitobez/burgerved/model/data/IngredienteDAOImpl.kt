@@ -3,6 +3,7 @@ package org.luisitobez.burgerved.model.data;
 
 import org.luisitobez.burgerved.model.domain.Detalles
 import org.luisitobez.burgerved.model.domain.Ingrediente
+import org.luisitobez.burgerved.model.domain.PedidoProductos
 import java.sql.SQLException
 
 class IngredienteDAOImpl(private val conexion: ConexionDB) {
@@ -61,5 +62,34 @@ class IngredienteDAOImpl(private val conexion: ConexionDB) {
             ex.printStackTrace()
         }
         return detalles
+    }
+
+    fun getIngredientes(): List<Ingrediente> {
+        val ingredientes = mutableListOf<Ingrediente>() // Lista mutable para almacenar los ingredientes
+        val sql = "SELECT * FROM Ingredientes" // Consulta SQL
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { ps ->
+                    ps.executeQuery().use { rs ->
+                        // Recorrer todas las filas del ResultSet
+                        while (rs.next()) {
+                            val ingrediente = Ingrediente(
+                                idIng = rs.getInt("id_ingrediente"),
+                                nombre = rs.getString("nombre"),
+                                precio = rs.getFloat("precio"),
+                                stock = rs.getInt("stock")
+                            )
+                            ingredientes.add(ingrediente) // Agregar el ingrediente a la lista
+                        }
+                    }
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al obtener los ingredientes: ${ex.message}")
+            ex.printStackTrace()
+        }
+
+        return ingredientes // Devolver la lista de ingredientes
     }
 }
