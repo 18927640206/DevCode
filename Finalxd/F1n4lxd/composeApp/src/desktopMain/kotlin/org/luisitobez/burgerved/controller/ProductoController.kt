@@ -5,6 +5,7 @@ import org.luisitobez.burgerved.model.data.ProductoDAOImpl
 import org.luisitobez.burgerved.model.domain.Producto
 import org.luisitobez.burgerved.model.domain.Pedido
 import org.luisitobez.burgerved.model.data.PedidoProductoDAOImpl
+import org.luisitobez.burgerved.model.domain.PedidoProductos
 
 class ProductoController(private val productoDAO: ProductoDAOImpl, private val pedidoProductoDAO: PedidoProductoDAOImpl) {
 
@@ -25,11 +26,36 @@ class ProductoController(private val productoDAO: ProductoDAOImpl, private val p
 
         return productos
     }
-    fun agregarProductoAPedido(pedido: Pedido, producto: Producto) {
+
+    fun obtenerTodasBebidas(): List<Producto> {
+        return productoDAO.getProductoBebida()
+    }
+
+    fun agregarProductoAPedido(pedido: Pedido, producto: Producto, contador: Int) {
         try {
-            pedidoProductoDAO.addProducto(pedido, producto, 1) // Llama al DAO.
+            pedidoProductoDAO.addProducto(pedido, producto, contador) // Llama al DAO.
         } catch (e: Exception) {
             println("Error al agregar el producto al pedido: ${e.message}")
         }
+    }
+
+    fun eliminarProductoAPedido(pedidoProductos: PedidoProductos){
+        try {
+            pedidoProductoDAO.borrarProducto(pedidoProducto = pedidoProductos)
+        } catch (e: Exception){
+            println("Error al borrar el producto del pedido: ${e.message}")
+        }
+    }
+
+    fun pedirPedidoProductos(pedido: Pedido): List<PedidoProductos>{
+        return pedidoProductoDAO.obtenerProductos(pedido = pedido)
+    }
+
+    fun pedirTotalAPagar(pedido: Pedido): Float{
+        return pedidoProductoDAO.obtenerTotal(pedido = pedido)
+    }
+
+    fun cambiarprecioDeProducto(pedidoProductos: PedidoProductos, precioFinal: Float){
+        pedidoProductoDAO.cambiarPrecio(pedidoProductos, precioFinal)
     }
 }
