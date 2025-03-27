@@ -31,9 +31,9 @@ class ProductoController(private val productoDAO: ProductoDAOImpl, private val p
         return productoDAO.getProductoBebida()
     }
 
-    fun agregarProductoAPedido(pedido: Pedido, producto: Producto, contador: Int) {
+    fun agregarProductoAPedido(pedido: Pedido, producto: Producto) {
         try {
-            pedidoProductoDAO.addProducto(pedido, producto, contador) // Llama al DAO.
+            pedidoProductoDAO.addProducto(pedido, producto) // Llama al DAO.
         } catch (e: Exception) {
             println("Error al agregar el producto al pedido: ${e.message}")
         }
