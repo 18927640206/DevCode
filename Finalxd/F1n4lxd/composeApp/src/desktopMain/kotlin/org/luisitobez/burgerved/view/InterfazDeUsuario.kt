@@ -46,12 +46,10 @@ class InterfazDeUsuario() : Screen {
         // Actualizar el precio total cuando cambie la lista de productos
         LaunchedEffect(productospedido) {
             precioTotal = productospedido.sumOf { it.precioUnitario.toDouble() }.toFloat()
-
             pedidoConDescuento = carritoController.aplicarDescuento(pedido.copy(total_pago = precioTotal), contador)
             montoAhorrado = pedidoConDescuento.montoAhorrado
             totalConDescuento = pedidoConDescuento.total_pago
         }
-
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFFF28001)),
             verticalArrangement = Arrangement.SpaceBetween
@@ -105,7 +103,8 @@ class InterfazDeUsuario() : Screen {
                                         producto = producto,
                                         onAddToCart = {
                                             contador++
-                                            productoController.agregarProductoAPedido(pedido, producto, contador)
+
+                                            productoController.agregarProductoAPedido(pedido, producto)
                                             productospedido = productoController.pedirPedidoProductos(pedido)
                                             notificarDescuento = carritoController.notificarDescuento(contador)
                                         }
@@ -134,13 +133,14 @@ class InterfazDeUsuario() : Screen {
                                         producto = producto,
                                         onAddToCart = {
                                             contador++
-                                            productoController.agregarProductoAPedido(pedido, producto, contador)
+                                            productoController.agregarProductoAPedido(pedido, producto)
                                             productospedido = productoController.pedirPedidoProductos(pedido)
                                         }
                                     )
                                 }
                             }
                         }
+
                     }
 
                     // Panel del carrito
@@ -211,6 +211,7 @@ class InterfazDeUsuario() : Screen {
                 }) {
                     Text("Cancelar", fontSize = 24.sp)
                 }
+
                 Column {
                     Text(
                         text = "Precio: $${precioTotal}",

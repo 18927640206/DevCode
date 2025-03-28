@@ -35,9 +35,11 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
 
     fun addPedido(): Pedido {
         // Crear un pedido con valores iniciales
+
         val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f, descuento = 0f, montoAhorrado = 0f)
 
         val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago, descuento, monto_ahorrado) VALUES (?, ?, ?, ?, ?)"
+      
         var generatedId: Int? = null
 
         // Obtener la conexión una sola vez
@@ -56,7 +58,7 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
                 consulta.setFloat(3, pedido.total_pago)
                 consulta.setFloat(4, pedido.descuento)
                 consulta.setFloat(5, pedido.montoAhorrado)
-
+                
                 val rowsAffected = consulta.executeUpdate()
 
                 if (rowsAffected > 0) {

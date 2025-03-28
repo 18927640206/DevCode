@@ -31,9 +31,9 @@ class ProductoController(private val productoDAO: ProductoDAOImpl, private val p
         return productoDAO.getProductoBebida()
     }
 
-    fun agregarProductoAPedido(pedido: Pedido, producto: Producto, contador: Int) {
+    fun agregarProductoAPedido(pedido: Pedido, producto: Producto) {
         try {
-            pedidoProductoDAO.addProducto(pedido, producto, contador) // Llama al DAO.
+            pedidoProductoDAO.addProducto(pedido, producto) // Llama al DAO.
         } catch (e: Exception) {
             println("Error al agregar el producto al pedido: ${e.message}")
         }
@@ -59,4 +59,21 @@ class ProductoController(private val productoDAO: ProductoDAOImpl, private val p
         pedidoProductoDAO.cambiarPrecio(pedidoProductos, precioFinal)
     }
 
+    fun obtenerSugerenciasParaPedido(pedido: Pedido): List<Producto> {
+        try {
+            // 1. Obtener los productos más populares
+            val productosPopulares = pedidoProductoDAO.obtenerProductosMasVendidos()
+
+            // 2. Obtener los IDs de los productos del pedido actual
+            val idsProductosActuales = pedidoProductoDAO.obtenerProductos(pedido).map { it.idProducto }
+
+            // 3. Filtrar productos populares que no estén ya en el pedido
+            return productosPopulares.filter { producto ->
+                producto.id !in idsProductosActuales
+            }.take(3) // Limitar a 3 sugerencias
+        } catch (e: Exception) {
+            println("Error al obtener sugerencias: ${e.message}")
+            return emptyList()
+        }
+    }
 }
