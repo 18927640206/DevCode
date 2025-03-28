@@ -41,10 +41,10 @@ fun PanelBebidas(
         ) {
             Image(
                 painter = painterResource(resource = Res.drawable.Soda),
-                contentDescription = null, // Descripción de la imagen para accesibilidad
+                contentDescription = null,
                 modifier = Modifier
-                    .size(64.dp) // Tamaño de la imagen
-                    .padding(end = 8.dp) // Espacio entre la imagen y el texto
+                    .size(64.dp)
+                    .padding(end = 8.dp)
             )
             Column(
                 modifier = Modifier
