@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.coroutines.delay
 import org.luisitobez.burgerved.controller.AppController
 import org.luisitobez.burgerved.model.domain.Pedido
 
@@ -26,6 +27,10 @@ class PanelPagoEfectivo(
         val appController = remember { AppController() }
         val carritoController = appController.carritoController
 
+        LaunchedEffect(Unit) {
+            delay(60000)
+            navigator.pop()
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -104,6 +109,7 @@ class PanelPagoEfectivo(
                 Button(onClick = {
                     if (insertedAmount >= pedido.total_pago){
                         carritoController.realizarPago(pedido, pedido.total_pago, "Efectivo")
+                        println("Cambio devuelto: ${insertedAmount-pedido.total_pago}")
                         navigator.push(PagoConfirmado())
                     }
                 },
