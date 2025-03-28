@@ -17,7 +17,9 @@ import org.luisitobez.burgerved.model.domain.Pedido
 import org.luisitobez.burgerved.model.domain.Producto
 import org.luisitobez.burgerved.controller.AppController
 
-class PaymentUI(private val pedido: Pedido) : Screen {
+class PaymentUI(
+    private val pedido: Pedido,
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow

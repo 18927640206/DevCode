@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import finalxd.composeapp.generated.resources.Res
-//import finalxd.composeapp.generated.resources.Soda
+import finalxd.composeapp.generated.resources.Soda
 import org.jetbrains.compose.resources.painterResource
 import org.luisitobez.burgerved.model.domain.Producto
 
@@ -39,13 +39,13 @@ fun PanelBebidas(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            /*Image(
+            Image(
                 painter = painterResource(resource = Res.drawable.Soda),
                 contentDescription = null, // Descripción de la imagen para accesibilidad
                 modifier = Modifier
                     .size(64.dp) // Tamaño de la imagen
                     .padding(end = 8.dp) // Espacio entre la imagen y el texto
-            )*/
+            )
             Column(
                 modifier = Modifier
                     .weight(1f)

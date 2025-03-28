@@ -58,7 +58,7 @@ class ProductoController(private val productoDAO: ProductoDAOImpl, private val p
     fun cambiarprecioDeProducto(pedidoProductos: PedidoProductos, precioFinal: Float){
         pedidoProductoDAO.cambiarPrecio(pedidoProductos, precioFinal)
     }
-    //SUGERENCIAS DE PEDIDO ***********************JOAHAN****************
+
     fun obtenerSugerenciasParaPedido(pedido: Pedido): List<Producto> {
         try {
             // 1. Obtener los productos más populares
