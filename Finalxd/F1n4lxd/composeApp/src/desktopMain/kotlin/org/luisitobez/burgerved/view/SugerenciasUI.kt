@@ -20,10 +20,12 @@ import org.luisitobez.burgerved.controller.ProductoController
 import org.luisitobez.burgerved.model.domain.Pedido
 import org.luisitobez.burgerved.model.domain.PedidoProductos
 import org.luisitobez.burgerved.model.domain.Producto
+import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 
 class SugerenciasUI(
     private val pedido: Pedido,
-    private val productosPedido: List<PedidoProductos>
+    private val productosPedido: List<PedidoProductos>,
+    private val montoAhorrado: Float
 ) : Screen {
 
     @Composable
@@ -31,6 +33,7 @@ class SugerenciasUI(
         val navigator = LocalNavigator.currentOrThrow
         val appController = remember { AppController() }
         val productoController = appController.productoController
+        val carritoController = appController.carritoController
 
         var productosSugeridos by remember { mutableStateOf<List<Producto>>(emptyList()) }
         var total by remember { mutableStateOf(productosPedido.sumOf { it.precioUnitario.toDouble() }.toFloat()) }
@@ -143,7 +146,7 @@ class SugerenciasUI(
 
                 Button(onClick = {
                     pedido.total_pago = total // Actualiza el total con las sugerencias añadidas
-                    navigator.push(PaymentUI(pedido)) // Luego a PaymentUI
+                    navigator.push(PaymentUI(pedido, montoAhorrado)) // Luego a PaymentUI
                 }) {
                     Text("Omitir/Pagar", fontSize = 24.sp)
                 }
