@@ -8,7 +8,7 @@ import java.sql.SQLException
 class ProductoDAOImpl (private val conexion: ConexionDB){
     //private val conexion = ConexionDB()
 
-   init {
+    init {
         println("com.mycompany.productoDAO.ProductoDaoImpl.<init>()")
     }
 
@@ -65,5 +65,38 @@ class ProductoDAOImpl (private val conexion: ConexionDB){
         }
 
         return detalles
+    }
+
+    fun getProductoBebida(): List<Producto> {
+        val sql = "SELECT * FROM Producto WHERE categoria = 'Bebida'"
+        val bebidas = mutableListOf<Producto>()
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { ps ->
+                    ps.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            val producto = Producto(
+                                id = rs.getInt("id_producto"),
+                                nombre = rs.getString("nombre"),
+                                detalles = rs.getString("descripcion"),
+                                precio = rs.getFloat("precio_base"),
+                                categoria = rs.getString("categoria"),
+                                imagen = rs.getString("imagen")
+                            )
+                            bebidas.add(producto) // Agregar la bebida a la lista
+                        }
+                    }
+                }
+            } ?: throw IllegalStateException("No se pudo obtener la conexión a la base de datos.")
+        } catch (ex: SQLException) {
+            println("Error al obtener las bebidas: ${ex.message}")
+            ex.printStackTrace()
+        } catch (ex: Exception) {
+            println("Error inesperado: ${ex.message}")
+            ex.printStackTrace()
+        }
+
+        return bebidas.toList() // Devuelve una lista inmutable
     }
 }

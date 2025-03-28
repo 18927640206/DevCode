@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.exposed.core)
             implementation(libs.exposed.dao)
             implementation(libs.exposed.jdbc)
+            implementation("com.sun.mail:jakarta.mail:2.0.1") // JavaMail
         }
     }
 }

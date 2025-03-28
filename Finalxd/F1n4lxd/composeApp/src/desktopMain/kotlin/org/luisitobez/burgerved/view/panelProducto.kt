@@ -1,5 +1,6 @@
 package org.luisitobez.burgerved.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -10,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.luisitobez.burgerved.model.data.PedidoProductoDAOImpl
-import org.luisitobez.burgerved.model.domain.Pedido
+import finalxd.composeapp.generated.resources.Res
+import finalxd.composeapp.generated.resources.rb_2151137700
+import org.jetbrains.compose.resources.painterResource
 import org.luisitobez.burgerved.model.domain.Producto
-import org.luisitobez.burgerved.controller.AppController
 
 @Composable
 fun ProductoItem(
@@ -23,7 +24,6 @@ fun ProductoItem(
     Button(
         onClick = {
             onAddToCart()
-            //pedidoDetalleDAO.addProducto( pedido, producto,1)
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -35,34 +35,26 @@ fun ProductoItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            /*Image(
-                painter = painterResource("commonMain\\composeResources\\drawable\\rb_2151137700.png"),
+            Image(
+                painter = painterResource(resource = Res.drawable.rb_2151137700),
                 contentDescription = null, // Descripción de la imagen para accesibilidad
                 modifier = Modifier
                     .size(64.dp) // Tamaño de la imagen
                     .padding(end = 8.dp) // Espacio entre la imagen y el texto
-            )*/
-            Text(text = producto.nombre, color = Color.Black)
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(text = producto.nombre, color = Color.Black)
+                Text(text = producto.detalles, color = Color.Black, fontSize = 10.sp)
+            }
+
+
             Text(text = "$${producto.precio}", color = Color.Black)
         }
-    }
-}
-
-
-@Composable
-fun ProductoButton(productoId: Int, onProductoSelected: (Int) -> Unit) {
-    Button(
-        onClick = { onProductoSelected(productoId) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-        elevation = null
-    ) {
-        Text(
-            text = "Producto $productoId",
-            fontSize = 24.sp,
-            color = Color.White
-        )
     }
 }

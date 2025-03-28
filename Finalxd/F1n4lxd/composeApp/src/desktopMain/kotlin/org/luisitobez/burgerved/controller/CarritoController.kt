@@ -6,8 +6,8 @@ import org.luisitobez.burgerved.model.domain.Pedido
 
 class CarritoController(private val pedidoDAO: PedidoDAOImpl) {
 
-    fun agregarPedido(pedido: Pedido) {
-        pedidoDAO.addPedido(pedido)
+    fun agregarPedido(): Pedido {
+        return pedidoDAO.addPedido()
     }
 
     fun obtenerUltimoPedido(): Pedido {
@@ -18,13 +18,20 @@ class CarritoController(private val pedidoDAO: PedidoDAOImpl) {
         pedidoDAO.borrarPedido(pedido)
 
     }
-    fun realizarPago(pedido: Pedido, totalAmount: Float): String {
+
+
+    fun actualizarPrecioPedido(pedido: Pedido, precioTotal: Float){
+        pedidoDAO.actualizarCostoPedido(pedido.id, precioTotal)
+    }
+
+
+
+    fun realizarPago(pedido: Pedido, totalAmount: Float, metodoPago: String): String {
         // logica para procesar el pago (por ejemplo, actualizar el estado del pedido)
         if (pedido.estado == "Pagado") {
             throw IllegalStateException("El pedido ya ha sido pagado.")
         }
-        pedidoDAO.actualizarEstadoPedido(pedido.id, "Pagado")
+        pedidoDAO.actualizarEstadoPedido(pedido.id, "Pagado", metodoPago)
         return "Pago exitoso por $$totalAmount"
-
     }
 }
