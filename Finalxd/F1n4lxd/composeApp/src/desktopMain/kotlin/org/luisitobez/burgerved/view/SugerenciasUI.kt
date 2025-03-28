@@ -145,7 +145,7 @@ class SugerenciasUI(
                 }
 
                 Button(onClick = {
-                    pedido.total_pago = total // Actualiza el total con las sugerencias añadidas
+                    pedido.total_pago = total - montoAhorrado // Actualiza el total con las sugerencias añadidas
                     navigator.push(PaymentUI(pedido)) // Luego a PaymentUI
                 }) {
                     Text("Omitir/Pagar", fontSize = 24.sp)
