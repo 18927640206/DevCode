@@ -194,4 +194,62 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB){
                 conexion.obtenerConexion()?.autoCommit = true // Restaurar autocommit
             }
     }
-}
+    fun obtenerProductosMasVendidos(): List<Producto> {
+        val productos = mutableListOf<Producto>()
+        val query = """
+        SELECT p.id_producto AS id, p.nombre, p.descripcion AS detalles, 
+               p.precio_base AS precio, p.categoria, p.imagen
+        FROM Pedido_Detalles pd
+        JOIN Producto p ON pd.id_producto = p.id_producto
+        GROUP BY pd.id_producto
+        ORDER BY COUNT(pd.id_producto) DESC
+        LIMIT 5
+    """
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(query).use { stmt ->
+                    stmt.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            val producto = Producto(
+                                id = rs.getInt("id"),
+                                nombre = rs.getString("nombre"),
+                                detalles = rs.getString("detalles"),
+                                precio = rs.getFloat("precio"),
+                                categoria = rs.getString("categoria"),
+                                imagen = rs.getString("imagen")
+                            )
+                            productos.add(producto)
+                        }
+                    }
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al obtener productos más vendidos: ${ex.message}")
+            ex.printStackTrace()
+        }
+
+        return productos
+    }
+    fun obtenerUltimoPedidoDeProducto(pedido: Pedido):Int {
+        val sql = "SELECT MAX(id_modificacion) AS maximiliano FROM pedido_detalles WHERE id_pedido = ?"
+        var numeroMasAlto = 0
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { consulta ->
+                    consulta.setInt(1, pedido.id)
+                    val resultSet = consulta.executeQuery()  // Ejecutar la consulta
+
+                    // Procesar el resultado
+                    if (resultSet.next()) {
+                        numeroMasAlto = resultSet.getInt("maximiliano") ?: 0
+                    }
+                }
+            } ?: throw SQLException("No se pudo obtener una conexión a la base de datos.")
+        } catch (ex: SQLException) {
+            //logger.error("Error al guardar el producto: Pedido ID=${pedido.id}, Producto ID=${producto.id}", ex)
+            throw ex
+        }
+        return numeroMasAlto
+    }

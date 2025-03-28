@@ -58,4 +58,22 @@ class ProductoController(private val productoDAO: ProductoDAOImpl, private val p
     fun cambiarprecioDeProducto(pedidoProductos: PedidoProductos, precioFinal: Float){
         pedidoProductoDAO.cambiarPrecio(pedidoProductos, precioFinal)
     }
+
+    fun obtenerSugerenciasParaPedido(pedido: Pedido): List<Producto> {
+        try {
+            // 1. Obtener los productos más populares
+            val productosPopulares = pedidoProductoDAO.obtenerProductosMasVendidos()
+
+            // 2. Obtener los IDs de los productos del pedido actual
+            val idsProductosActuales = pedidoProductoDAO.obtenerProductos(pedido).map { it.idProducto }
+
+            // 3. Filtrar productos populares que no estén ya en el pedido
+            return productosPopulares.filter { producto ->
+                producto.id !in idsProductosActuales
+            }.take(3) // Limitar a 3 sugerencias
+        } catch (e: Exception) {
+            println("Error al obtener sugerencias: ${e.message}")
+            return emptyList()
+        }
+    }
 }

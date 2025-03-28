@@ -194,7 +194,7 @@ class InterfazDeUsuario() : Screen {
                 Button(onClick = {
                     pedido.total_pago = precioTotal
                     carritoController.actualizarPrecioPedido(pedido, precioTotal)
-                    navigator.push(PaymentUI(pedido))
+                    navigator.push(SugerenciasUI(pedido, productospedido)) // Cambiado a SugerenciasUI
                 }) {
                     Text("Pagar", fontSize = 24.sp)
                 }

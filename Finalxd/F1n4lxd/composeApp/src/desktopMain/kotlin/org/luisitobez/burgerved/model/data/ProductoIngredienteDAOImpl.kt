@@ -36,7 +36,7 @@ class ProductoIngredienteDAOImpl(private val conexion: ConexionDB) {
         return productoIngredientes
     }
 
-    fun obtenerIngredientes(producto: Producto): List<ProductoIngredientes> {
+    fun obtenerIngredientes(producto: Producto): List<ProductoIngredientes>? {
         val ingredientes = mutableListOf<ProductoIngredientes>()
         val sql = "SELECT * FROM Producto_Ingredientes WHERE id_producto = ?"
 
