@@ -19,6 +19,7 @@ import org.luisitobez.burgerved.controller.AppController
 
 class PaymentUI(
     private val pedido: Pedido,
+    private val montoAhorrado: Float
 ) : Screen {
     @Composable
     override fun Content() {
@@ -58,6 +59,7 @@ class PaymentUI(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("Total a pagar: $${pedido.total_pago}", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                Text("¡Estas ahorrando $${montoAhorrado}!", fontSize = 24.sp, color = Color.Green)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Selección del método de pago

@@ -166,6 +166,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
         } catch (ex: SQLException) {
             println("Error al obtener el total del pedido: ${ex.message}")
             ex.printStackTrace()
+
         }
 
         return total
@@ -240,5 +241,93 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
         }
 
         return productos
+    }
+
+    fun obtenerProductos(pedido: Pedido): List<PedidoProductos>{
+        val pedidoProducto = mutableListOf<PedidoProductos>()
+        val sql = "SELECT * FROM pedido_detalles WHERE id_pedido = ?"
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { consulta ->
+                    consulta.setInt(1, pedido.id)
+
+                    consulta.executeQuery().use { resultado ->
+                        while (resultado.next()) {
+                            val producto = PedidoProductos(
+                                idPedido = resultado.getInt("id_pedido"),
+                                idProducto = resultado.getInt("id_producto"),
+                                idModificacion = resultado.getInt("id_modificacion"),
+                                precioUnitario = resultado.getFloat("precio_unitario")
+                            )
+                            pedidoProducto.add(producto)
+                        }
+                    }
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al obtener los productos del pedido: ${ex.message}")
+            ex.printStackTrace()
+        }
+
+        return pedidoProducto
+    }
+
+
+    fun obtenerTotal(pedido: Pedido): Float {
+        var total = 0.0f
+        val sql = "SELECT SUM(precio_unitario) AS total_pedido FROM pedido_detalles WHERE id_pedido = ?"
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { consulta ->
+                    consulta.setInt(1, pedido.id)  // Asignar el id_pedido al parámetro
+                    val resultSet = consulta.executeQuery()  // Ejecutar la consulta
+
+                    // Procesar el resultado
+                    if (resultSet.next()) {
+                        total = resultSet.getFloat("total_pedido")
+                    }
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al obtener el total del pedido: ${ex.message}")
+            ex.printStackTrace()
+        }
+
+        return total
+    }
+
+    fun cambiarPrecio(pedidoProducto: PedidoProductos, precioFinal: Float){
+        val sql = "UPDATE pedido_detalles SET precio_unitario = ? WHERE id_modificacion = ?"
+
+            try {
+                conexion.obtenerConexion()?.use { conn ->
+                    conn.autoCommit = false // Desactivar autocommit para manejar transacciones
+
+                    conn.prepareStatement(sql).use { ps ->
+                        // Establecer los parámetros de la consulta
+                        ps.setFloat(1, precioFinal)
+                        ps.setInt(2, pedidoProducto.idModificacion)
+
+                        // Ejecutar la consulta
+                        val filasAfectadas = ps.executeUpdate()
+
+                        if (filasAfectadas > 0) {
+                            conn.commit() // Confirmar la transacción
+                            println("Precio actualizado correctamente.")
+                        } else {
+                            conn.rollback() // Revertir la transacción si no se afectaron filas
+                            println("No se encontró el pedido_detalles con ID: ${pedidoProducto.idModificacion}")
+                        }
+                    }
+                }
+            } catch (ex: SQLException) {
+                conexion.obtenerConexion()?.rollback() // Revertir en caso de error
+                println("Error al actualizar el precio: ${ex.message}")
+                ex.printStackTrace()
+            } finally {
+                conexion.obtenerConexion()?.autoCommit = true // Restaurar autocommit
+            }
     }
 }

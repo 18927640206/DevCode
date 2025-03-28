@@ -35,9 +35,11 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
 
     fun addPedido(): Pedido {
         // Crear un pedido con valores iniciales
-        val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f)
 
-        val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago) VALUES (?, ?, ?)"
+        val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f, descuento = 0f, montoAhorrado = 0f)
+
+        val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago, descuento, monto_ahorrado) VALUES (?, ?, ?, ?, ?)"
+      
         var generatedId: Int? = null
 
         // Obtener la conexión una sola vez
@@ -54,7 +56,9 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
                 consulta.setString(1, pedido.estado)
                 consulta.setString(2, pedido.metodo_pago)
                 consulta.setFloat(3, pedido.total_pago)
-
+                consulta.setFloat(4, pedido.descuento)
+                consulta.setFloat(5, pedido.montoAhorrado)
+                
                 val rowsAffected = consulta.executeUpdate()
 
                 if (rowsAffected > 0) {
@@ -106,12 +110,14 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
     }
 
     // PedidoDAOImpl.kt
-    fun updatePedido(pedido: Pedido) {
+    fun updatePedido(pedido: Pedido, descuento: Float, montoAhorrado: Float) {
         val sql = """
         UPDATE Pedido SET 
         estado = ?, 
         metodo_pago = ?, 
-        total_pago = ? 
+        total_pago = ?,
+        descuento = ?,
+        monto_ahorrado = ?
         WHERE id_pedido = ?
     """.trimIndent()
 
@@ -121,7 +127,10 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
                     consulta.setString(1, pedido.estado)
                     consulta.setString(2, pedido.metodo_pago)
                     consulta.setFloat(3, pedido.total_pago)
-                    consulta.setInt(4, pedido.id)
+                    consulta.setFloat(4, descuento)
+                    consulta.setFloat(5, montoAhorrado)
+                    consulta.setInt(6, pedido.id)
+
 
                     val rowsAffected = consulta.executeUpdate()
                     println(if (rowsAffected > 0) "Pedido actualizado exitosamente." else "No se pudo actualizar el pedido.")

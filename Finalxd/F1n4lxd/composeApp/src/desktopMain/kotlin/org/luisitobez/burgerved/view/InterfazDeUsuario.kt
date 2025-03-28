@@ -28,9 +28,14 @@ class InterfazDeUsuario() : Screen {
         val carritoController = appController.carritoController
         var pedido by rememberSaveable { mutableStateOf(carritoController.agregarPedido()) }
         val navigator = LocalNavigator.currentOrThrow
-        var contador by remember { mutableStateOf(0) }
+        var contador by rememberSaveable { mutableStateOf(0) }
         var productospedido by remember { mutableStateOf<List<PedidoProductos>>(emptyList()) }
         var precioTotal by remember { mutableStateOf(0.0f) }
+
+        var notificarDescuento by remember { mutableStateOf("") }
+        var pedidoConDescuento by rememberSaveable { mutableStateOf(pedido) }
+        var montoAhorrado by rememberSaveable { mutableStateOf(0f) }
+        var totalConDescuento by rememberSaveable { mutableStateOf(0f) }
 
         // Obtener productos y bebidas
         val productos = productoController.obtenerTodosProductos()
@@ -41,8 +46,10 @@ class InterfazDeUsuario() : Screen {
         // Actualizar el precio total cuando cambie la lista de productos
         LaunchedEffect(productospedido) {
             precioTotal = productospedido.sumOf { it.precioUnitario.toDouble() }.toFloat()
+            pedidoConDescuento = carritoController.aplicarDescuento(pedido.copy(total_pago = precioTotal), contador)
+            montoAhorrado = pedidoConDescuento.montoAhorrado
+            totalConDescuento = pedidoConDescuento.total_pago
         }
-
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFFF28001)),
             verticalArrangement = Arrangement.SpaceBetween
@@ -96,8 +103,10 @@ class InterfazDeUsuario() : Screen {
                                         producto = producto,
                                         onAddToCart = {
                                             contador++
+
                                             productoController.agregarProductoAPedido(pedido, producto)
                                             productospedido = productoController.pedirPedidoProductos(pedido)
+                                            notificarDescuento = carritoController.notificarDescuento(contador)
                                         }
                                     )
                                 }
@@ -131,6 +140,7 @@ class InterfazDeUsuario() : Screen {
                                 }
                             }
                         }
+
                     }
 
                     // Panel del carrito
@@ -169,6 +179,21 @@ class InterfazDeUsuario() : Screen {
                 }
             }
 
+            //Notificacion de descuento
+            if (notificarDescuento.isNotEmpty()) {
+                Text(
+                    text = notificarDescuento,
+                    color = Color.Green,
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .background(Color(0xFF042E46).copy(alpha = 0.7f))
+                        .padding(8.dp),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
             // Panel de pago
             Row(
                 modifier = Modifier
@@ -186,15 +211,29 @@ class InterfazDeUsuario() : Screen {
                 }) {
                     Text("Cancelar", fontSize = 24.sp)
                 }
-                Text(
-                    text = "Total a pagar $${precioTotal}",
-                    fontSize = 24.sp,
-                    color = Color.White
-                )
+
+                Column {
+                    Text(
+                        text = "Precio: $${precioTotal}",
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Descuento: $${montoAhorrado}",
+                        fontSize = 20.sp,
+                        color = Color.White,
+                    )
+                    Text(
+                        text = "Total a pagar: $${totalConDescuento}",
+                        fontSize = 24.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Button(onClick = {
-                    pedido.total_pago = precioTotal
-                    carritoController.actualizarPrecioPedido(pedido, precioTotal)
-                    navigator.push(SugerenciasUI(pedido, productospedido)) // Cambiado a SugerenciasUI
+                    pedido.total_pago = totalConDescuento
+                    carritoController.actualizarPrecioPedido(pedido, totalConDescuento)
+                    navigator.push(PaymentUI(pedido, montoAhorrado))
                 }) {
                     Text("Pagar", fontSize = 24.sp)
                 }
