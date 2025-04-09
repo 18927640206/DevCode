@@ -15,19 +15,19 @@ class ProductoIngredienteDAOImpl(private val conexion: ConexionDB) {
 
         try {
             conexion.obtenerConexion()?.use { conn ->
-                    conn.prepareStatement(sql).use { consulta ->
+                conn.prepareStatement(sql).use { consulta ->
                     consulta.setString(1, idProducto)
-                consulta.setString(2, idIngrediente)
-                consulta.executeQuery().use { resultado ->
-                    if (resultado.next()) {
-                        productoIngredientes = ProductoIngredientes(
+                    consulta.setString(2, idIngrediente)
+                    consulta.executeQuery().use { resultado ->
+                        if (resultado.next()) {
+                            productoIngredientes = ProductoIngredientes(
                                 idProducto = resultado.getInt("id_producto"),
                                 idIngrediente = resultado.getInt("id_ingrediente"),
                                 cantidad = resultado.getInt("cantidad")
-                        )
+                            )
+                        }
                     }
                 }
-            }
             }
         } catch (ex: SQLException) {
             println("Error al obtener el producto ingrediente: ${ex.message}")

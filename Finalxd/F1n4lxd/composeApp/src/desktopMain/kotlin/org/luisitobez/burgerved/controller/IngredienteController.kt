@@ -5,14 +5,6 @@ import org.luisitobez.burgerved.model.domain.Ingrediente
 
 class IngredienteController(private val ingredienteDAO: IngredienteDAOImpl) {
 
-    fun obtenerIngredientePorId(idIng: String): Ingrediente? {
-        return ingredienteDAO.getProductoById(idIng)
-    }
-
-    fun obtenerNumeroDeIngredientes(): Int {
-        return ingredienteDAO.getNumeroDeIngredientes()?.numeroDeIngredientes ?: 0
-    }
-
     fun obtenerTodosIngrediente(): List<Ingrediente>{
         val numero = ingredienteDAO.getNumeroDeIngredientes()?.numeroDeIngredientes ?: 0
         val Ingredientes = mutableListOf<Ingrediente>()
@@ -24,7 +16,10 @@ class IngredienteController(private val ingredienteDAO: IngredienteDAOImpl) {
             }
         }
 
-
         return Ingredientes
+    }
+
+    fun actualizarStock(id: Int, cantidad:Int) {
+        ingredienteDAO.setStock(id, cantidad)
     }
 }
