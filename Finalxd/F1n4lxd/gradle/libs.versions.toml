@@ -7,6 +7,8 @@ kotlinx-coroutines = "1.10.1"
 mysql-connector = "8.0.33"
 exposed = "0.41.1"
 voyager = "1.1.0-beta02"
+junit-version = "4.12"
+junit-jupiter = "5.8.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -28,6 +30,8 @@ compose-desktop = { module = "org.jetbrains.compose.desktop:desktop", version.re
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-multiplatform" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+junit-junit = { group = "junit", name = "junit", version.ref = "junit-version" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
 
 [plugins]
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
