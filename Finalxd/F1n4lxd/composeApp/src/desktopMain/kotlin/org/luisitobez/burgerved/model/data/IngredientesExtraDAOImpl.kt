@@ -1,4 +1,4 @@
-package org.luisitobez.burgerved.model.data;
+package org.luisitobez.burgerved.model.data
 
 import org.luisitobez.burgerved.model.domain.Ingrediente
 import org.luisitobez.burgerved.model.domain.IngredientesExtra

@@ -17,7 +17,6 @@ class UsuarioController(private val usuarioDAO: UsuarioDAOImpl) {
         return try {
             usuarioDAO.IniciarSesion(correoLimpio, contraseñaLimpia)
         } catch (e: Exception) {
-            // Loggear el error si es necesario
             false
         }
     }

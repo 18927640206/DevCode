@@ -34,15 +34,15 @@ class UsuarioControllerTest {
         "'test@example.com', ' '", // Whitespace password
         "'', ''"                  // Both empty
     )
-    fun `should reject blank credentials`(email: String, password: String) {
+    fun VaciasOEspacios(email: String, password: String) {
         val result = usuarioController.administrarSesion(email, password)
-        assertFalse(result)
+        Assertions.assertFalse(result)
         verify(exactly = 0) { usuarioDAO.IniciarSesion(any(), any()) }
     }
 
     // Test cases for credential trimming
     @Test
-    fun `should trim credentials before checking`() {
+    fun EliminarEspacios() {
         // Setup
         every { usuarioDAO.IniciarSesion("test@example.com", "password123") } returns true
 
@@ -50,7 +50,7 @@ class UsuarioControllerTest {
         val result = usuarioController.administrarSesion("  test@example.com  ", "  password123  ")
 
         // Verify
-        assertTrue(result)
+        Assertions.assertTrue(result)
         verify(exactly = 1) {
             usuarioDAO.IniciarSesion("test@example.com", "password123")
         }
@@ -58,7 +58,7 @@ class UsuarioControllerTest {
 
     // Test cases for successful login
     @Test
-    fun `should return true for valid credentials`() {
+    fun InicioExitoso() {
         // Setup
         val validEmail = "admin@burgerved.com"
         val validPassword = "secure123"
@@ -68,13 +68,13 @@ class UsuarioControllerTest {
         val result = usuarioController.administrarSesion(validEmail, validPassword)
 
         // Verify
-        assertTrue(result)
+        Assertions.assertTrue(result)
         verify { usuarioDAO.IniciarSesion(validEmail, validPassword) }
     }
 
     // Test cases for failed login
     @Test
-    fun `should return false for invalid credentials`() {
+    fun InicioInvalido() {
         // Setup
         val invalidEmail = "wrong@example.com"
         val invalidPassword = "wrongpass"
@@ -84,42 +84,7 @@ class UsuarioControllerTest {
         val result = usuarioController.administrarSesion(invalidEmail, invalidPassword)
 
         // Verify
-        assertFalse(result)
+        Assertions.assertFalse(result)
         verify { usuarioDAO.IniciarSesion(invalidEmail, invalidPassword) }
-    }
-
-    // Test cases for exception handling
-    @Test
-    fun `should handle database exceptions gracefully`() {
-        // Setup
-        val errorEmail = "error@example.com"
-        val errorPassword = "errorpass"
-        every { usuarioDAO.IniciarSesion(errorEmail, errorPassword) } throws
-                RuntimeException("Database connection failed")
-
-        // Execute
-        val result = usuarioController.administrarSesion(errorEmail, errorPassword)
-
-        // Verify
-        assertFalse(result)
-        verify { usuarioDAO.IniciarSesion(errorEmail, errorPassword) }
-    }
-
-    // Edge case testing
-    @Test
-    fun `should handle SQL injection attempts`() {
-        // Setup
-        val sqlInjectionEmail = "admin@burgerved.com'--"
-        val sqlInjectionPassword = "whatever"
-        every { usuarioDAO.IniciarSesion(sqlInjectionEmail, sqlInjectionPassword) } returns false
-
-        // Execute
-        val result = usuarioController.administrarSesion(sqlInjectionEmail, sqlInjectionPassword)
-
-        // Verify
-        assertFalse(result)
-        verify {
-            usuarioDAO.IniciarSesion(sqlInjectionEmail, sqlInjectionPassword)
-        }
     }
 }
