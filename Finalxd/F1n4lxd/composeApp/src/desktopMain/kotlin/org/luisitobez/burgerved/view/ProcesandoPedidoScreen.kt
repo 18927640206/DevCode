@@ -16,12 +16,19 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.border // Import añadido para resolver el error 'border'
+import org.luisitobez.burgerved.controller.AppController
+import org.luisitobez.burgerved.controller.CarritoController
+import org.luisitobez.burgerved.model.domain.Pedido
 
-class ProcesandoPedidoScreen : Screen {
+class ProcesandoPedidoScreen(
+    private var pedido: Pedido,
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         var progreso by remember { mutableStateOf(0f) }
+        val appController = remember { AppController() }
+        val carritoController = appController.carritoController
 
         LaunchedEffect(Unit) {
             while (progreso < 1f) {
@@ -29,7 +36,7 @@ class ProcesandoPedidoScreen : Screen {
                 progreso += 0.01f
                 if (progreso >= 1f) {
                     delay(1000L)
-                    navigator.push(PedidoListoScreen())
+                    navigator.push(PedidoListoScreen(pedido, carritoController))
                 }
             }
         }
@@ -123,7 +130,10 @@ class ProcesandoPedidoScreen : Screen {
     }
 }
 
-class PedidoListoScreen : Screen {
+class PedidoListoScreen(
+    private var pedido: Pedido,
+    private var carritoController: CarritoController
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -187,18 +197,42 @@ class PedidoListoScreen : Screen {
 
                 Spacer(modifier = Modifier.height(36.dp))
 
-                Button(
-                    onClick = {
-                        // Reemplazo de popToRoot() con la navegación adecuada
-                        navigator.popUntil { it is InterfazDeUsuario }
-                        // O alternativamente: navigator.replaceAll(InterfazDeUsuario())
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.padding(16.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Volver al inicio", fontSize = 20.sp, color = Color.White)
+                    // Botón "Aceptar"
+                    Button(
+                        onClick = { navigator.replaceAll(InterfazDeUsuario()) },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .widthIn(min = 120.dp)
+                            .padding(end = 8.dp)
+                    ) {
+                        Text("Volver al inicio", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
+                    }
+
+                    // Botón "Ver Comprobante"
+                    Button(
+                        onClick = {
+                            pedido = carritoController.obtenerUltimoPedido()
+                            navigator.push(ComprobantePago(pedido))
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .widthIn(min = 120.dp)
+                            .padding(end = 8.dp)
+                    ) {
+                        Text("Ver Comprobante", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
+                    }
                 }
+
+
             }
 
             // Pie de página

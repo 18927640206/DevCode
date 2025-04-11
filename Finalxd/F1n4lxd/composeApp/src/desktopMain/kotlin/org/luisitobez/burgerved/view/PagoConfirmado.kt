@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.coroutines.delay
 import org.luisitobez.burgerved.controller.AppController
 import org.luisitobez.burgerved.model.domain.Pedido
 
@@ -29,10 +31,7 @@ class PagoConfirmado(
         val carritoController = appController.carritoController
 
         // Navegar automáticamente después de 3 segundos
-        LaunchedEffect(Unit) {
-            delay(3000L)
-            navigator.push(ProcesandoPedidoScreen())
-        }
+
 
         Column(
             modifier = Modifier
@@ -87,37 +86,12 @@ class PagoConfirmado(
 
                 // Botón de aceptar (opcional, puedes quitarlo si no lo necesitas)
                 Button(
-                    onClick = { navigator.push(ProcesandoPedidoScreen()) },
+                    onClick = { navigator.push(ProcesandoPedidoScreen(pedido)) },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
                     shape = RoundedCornerShape(12.dp)
 
-                ) {
-                    // Botón "Aceptar"
-                    Button(
-                        onClick = { navigator.replaceAll(InterfazDeUsuario()) },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .widthIn(min = 120.dp)
-                            .padding(end = 8.dp)
-                    ) {
-                        Text("Aceptar", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
-                    }
-
-                    // Botón "Ver Comprobante"
-                    Button(
-                        onClick = {
-                            pedido = carritoController.obtenerUltimoPedido()
-                            navigator.push(ComprobantePago(pedido))
-                                  },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .widthIn(min = 120.dp)
-                            .padding(end = 8.dp)
-                    ) {
-                        Text("Ver Comprobante", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
-                    }
+                ){
+                    Text("Aceptar", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
                 }
             }
 
@@ -139,3 +113,5 @@ class PagoConfirmado(
         }
     }
 }
+
+

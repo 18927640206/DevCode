@@ -12,12 +12,6 @@ mockative = "1.10.0"
 junit-version = "4.12"
 junit-jupiter = "5.8.2"
 mockk = "1.13.7"
-
-mockito = "5.3.1"
-mockative = "1.10.0"
-junit-version = "4.12"
-junit-jupiter = "5.8.2"
-mockk = "1.13.7"
 slf4j = "2.0.9"
 
 
