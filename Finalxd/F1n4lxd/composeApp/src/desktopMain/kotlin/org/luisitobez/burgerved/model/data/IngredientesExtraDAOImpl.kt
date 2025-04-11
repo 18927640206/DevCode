@@ -1,7 +1,8 @@
-package org.luisitobez.burgerved.model.data;
+package org.luisitobez.burgerved.model.data
 
 import org.luisitobez.burgerved.model.domain.Ingrediente
 import org.luisitobez.burgerved.model.domain.IngredientesExtra
+import org.luisitobez.burgerved.model.domain.Pedido
 import org.luisitobez.burgerved.model.domain.PedidoProductos
 import java.sql.SQLException
 
@@ -82,5 +83,35 @@ class IngredientesExtraDAOImpl(private val conexion: ConexionDB) {
             println("Error al actualizar la cantidad de ingrediente extra.")
             ex.printStackTrace()
         }
+    }
+
+    fun getAllIngredientesExtra(pedidoProducto: PedidoProductos): List<IngredientesExtra> {
+        val sql = "SELECT * FROM Ingredientes_Extra WHERE id_pedido = ? AND id_modificacion = ?"
+        val ingredientesExtra = mutableListOf<IngredientesExtra>()
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { consulta ->
+                    consulta.setInt(1, pedidoProducto.idPedido)
+                    consulta.setInt(2, pedidoProducto.idModificacion)
+
+                    consulta.executeQuery().use { resultado ->
+                        while (resultado.next()) {
+                            ingredientesExtra.add(IngredientesExtra(
+                                idPedido = resultado.getInt("id_pedido"),
+                                idProducto = resultado.getInt("id_modificacion"),
+                                idIngrediente = resultado.getInt("id_ingrediente"),
+                                cantidad = resultado.getInt("cantidad")
+                            ))
+                        }
+                    }
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al obtener ingredientes extra: ${ex.message}")
+            ex.printStackTrace()
+        }
+
+        return ingredientesExtra
     }
 }

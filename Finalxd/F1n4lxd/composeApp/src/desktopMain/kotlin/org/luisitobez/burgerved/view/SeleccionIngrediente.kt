@@ -38,7 +38,9 @@ class SeleccionIngrediente(
         // Estado para almacenar el precio total adicional
         var total by remember { mutableStateOf(0f) }
         val ingredientes = ingredienteController.obtenerTodosIngrediente()
+        val ingredientesExtra = ingredientesExtraController.obtenerTodosIngrediente(pedidoProductos)
         val productoIngredientes = productoIngredienteController.obtenerIngredientesDeProducto(producto)
+
 
         val cantidades = remember { mutableStateMapOf<Int, Int>() }
 
@@ -75,7 +77,8 @@ class SeleccionIngrediente(
                 modifier = Modifier.weight(1f).background(Color(0xFFF28001)).fillMaxWidth()
             ) {
                 itemsIndexed(ingredientes) { index, ingrediente ->
-                    val cantidad = cantidades[ingrediente.idIng] ?: 0
+                    val cantidad = cantidades[ingrediente.idIng]?.plus(ingredientesExtra[index].cantidad)
+                        ?: 0
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

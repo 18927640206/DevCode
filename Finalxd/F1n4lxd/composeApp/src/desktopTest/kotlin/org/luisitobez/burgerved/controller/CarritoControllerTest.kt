@@ -31,6 +31,7 @@ class CarritoControllerTest {
             estado = "activo",
             metodo_pago = "sin definir",
             total_pago = 0f,
+
             fecha_hora = LocalDateTime.now(),
             descuento = 0f,
             montoAhorrado = 0f
@@ -45,6 +46,8 @@ class CarritoControllerTest {
         assertEquals(pedidoEsperado, resultado)
         verify(exactly = 1) { pedidoDAO.addPedido() }
     }
+
+
 
     @Test
     fun obtenerUltimoPedido() {
@@ -193,3 +196,4 @@ class CarritoControllerTest {
     }
 
 }
+
