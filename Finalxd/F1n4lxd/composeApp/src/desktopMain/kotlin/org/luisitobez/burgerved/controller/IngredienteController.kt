@@ -16,7 +16,10 @@ class IngredienteController(private val ingredienteDAO: IngredienteDAOImpl) {
             }
         }
 
-
         return Ingredientes
+    }
+
+    fun actualizarStock(id: Int, cantidad:Int) {
+        ingredienteDAO.setStock(id, cantidad)
     }
 }

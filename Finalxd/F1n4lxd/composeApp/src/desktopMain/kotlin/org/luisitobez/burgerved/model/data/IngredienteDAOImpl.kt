@@ -1,4 +1,4 @@
-package org.luisitobez.burgerved.model.data;
+package org.luisitobez.burgerved.model.data
 
 
 import org.luisitobez.burgerved.model.domain.Detalles
@@ -91,5 +91,23 @@ class IngredienteDAOImpl(private val conexion: ConexionDB) {
         }
 
         return ingredientes // Devolver la lista de ingredientes
+    }
+
+    fun setStock(id: Int, cantidad: Int) {
+        val sql = "UPDATE Ingredientes SET stock = ? WHERE id_ingrediente = ?"
+
+        try {
+            conexion.obtenerConexion()?.use { conn ->
+                conn.prepareStatement(sql).use { ps ->
+                    ps.setInt(1, cantidad)
+                    ps.setInt(2, id)
+                    ps.executeUpdate()
+                }
+            }
+        } catch (ex: SQLException) {
+            println("Error al actualizar el stock: ${ex.message}")
+            ex.printStackTrace()
+            throw ex // Opcional: relanzar la excepción para manejo superior
+        }
     }
 }

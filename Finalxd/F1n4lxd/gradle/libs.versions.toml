@@ -13,6 +13,15 @@ junit-version = "4.12"
 junit-jupiter = "5.8.2"
 mockk = "1.13.7"
 
+mockito = "5.3.1"
+mockative = "1.10.0"
+junit-version = "4.12"
+junit-jupiter = "5.8.2"
+mockk = "1.13.7"
+slf4j = "2.0.9"
+
+
+
 [libraries]
 mockk-common = { module = "io.mockk:mockk-common", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
@@ -41,6 +50,10 @@ mockative = { module = "org.mockative:mockative", version.ref = "mockative" }
 junit-junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+
 
 [plugins]
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }

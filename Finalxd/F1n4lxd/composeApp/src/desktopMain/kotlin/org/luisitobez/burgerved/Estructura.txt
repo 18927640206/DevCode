@@ -1,0 +1,46 @@
+📦 src/main/kotlin/org/luisitobez/burgerved
+├── 📂 presentation      # Capa de Presentación (Vista + Controlador en MVC)
+│   ├── 📂 controllers   # Controladores (parte del MVC)
+│   │   ├── AppController.kt
+│   │   ├── CarritoController.kt
+│   │   ├── IngredienteController.kt
+│   │   ├── PedidoController.kt
+│   │   └── ...
+│   ├── 📂 views         # Vistas (Compose Components)
+│   │   ├── ModificarIngredientes.kt
+│   │   ├── PanelCarrito.kt
+│   │   ├── PanelProducto.kt
+│   │   └── ...
+│   └── 📂 navigation    # Navegación
+│       └── AppNavigation.kt
+│
+├── 📂 business         # Capa de Lógica de Negocio
+│   ├── 📂 services
+│   │   ├── PedidoService.kt
+│   │   ├── ProductoService.kt
+│   │   ├── IngredienteService.kt
+│   │   └── ...
+│   ├── 📂 models       # Modelos de dominio (parte del MVC)
+│   │   ├── Pedido.kt
+│   │   ├── Producto.kt
+│   │   ├── Ingrediente.kt
+│   │   └── ...
+│   └── 📂 exceptions
+│       ├── BusinessException.kt
+│       └── ...
+│
+└── 📂 data            # Capa de Datos
+    ├── 📂 repositories
+    │   ├── PedidoRepositoryImpl.kt
+    │   ├── ProductoRepositoryImpl.kt
+    │   └── ...
+    ├── 📂 dao         # Data Access Objects
+    │   ├── PedidoDAO.kt
+    │   ├── ProductoDAO.kt
+    │   └── ...
+    ├── 📂 entities    # Entidades de BD
+    │   ├── PedidoEntity.kt
+    │   ├── ProductoEntity.kt
+    │   └── ...
+    └── 📂 local       # Conexión a BD
+        └── ConexionDB.kt
