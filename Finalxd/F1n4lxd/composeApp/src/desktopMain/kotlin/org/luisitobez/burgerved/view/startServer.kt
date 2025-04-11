@@ -23,7 +23,7 @@ fun startServer(navigator: Navigator, pedido: Pedido, carritoController: Carrito
         server = HttpServer.create(InetSocketAddress(port), 0).apply {
             createContext("/payment_success") { exchange ->
                 carritoController.realizarPago(pedido, pedido.total_pago, "PayPal")
-                navigator.push(PagoConfirmado())  // Cambia a la pantalla de éxito
+                navigator.push(PagoConfirmado(pedido))  // Cambia a la pantalla de éxito
                 exchange.sendResponseHeaders(200, "OK".toByteArray().size.toLong())
                 exchange.responseBody.use { it.write("OK".toByteArray()) }
             }

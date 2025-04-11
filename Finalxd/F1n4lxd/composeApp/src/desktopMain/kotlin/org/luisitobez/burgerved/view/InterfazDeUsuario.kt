@@ -208,7 +208,8 @@ class InterfazDeUsuario() : Screen {
                     carritoController.eliminarPedido(pedido)
                     pedido = appController.pedidoController.agregarPedido()!!
                     productospedido = productoController.pedirPedidoProductos(pedido)
-                }) {
+                },  enabled = productospedido.isNotEmpty()
+                    ) {
                     Text("Cancelar", fontSize = 24.sp)
                 }
 
@@ -234,7 +235,8 @@ class InterfazDeUsuario() : Screen {
                     pedido.total_pago = totalConDescuento
                     carritoController.actualizarPrecioPedido(pedido, totalConDescuento)
                     navigator.push(SugerenciasUI(pedido, productospedido, montoAhorrado))
-                }) {
+                },  enabled = productospedido.isNotEmpty()
+                    ) {
                     Text("Pagar", fontSize = 24.sp)
                 }
             }
