@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.luisitobez.burgerved.controller.PedidoControllerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-04-10T07:12:22" hostname="DESKTOP-2QSD088" time="2.022">
+  <properties/>
+  <testcase name="programarPedido debe asignar codigo unico y guardar pedido programado()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="1.571"/>
+  <testcase name="verificarCodigo debe devolver null si no se encuentra el código()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="0.398"/>
+  <testcase name="verificarCodigo debe devolver null si el código no está pendiente()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="0.011"/>
+  <testcase name="verificarCodigo debe devolver un pedido si se encuentra un código coincidente()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="0.005"/>
+  <testcase name="agregarPedido()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="0.01"/>
+  <testcase name="marcarPedidoEntregado debe actualizar el estado a entregado si la entrega es exitosa()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="0.007"/>
+  <testcase name="generarCodigo debe devolver un codigo con 3 letras seguidas de 3 numeros()[desktop]" classname="org.luisitobez.burgerved.controller.PedidoControllerTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

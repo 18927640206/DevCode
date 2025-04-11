@@ -18,7 +18,6 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
-
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
@@ -61,7 +60,6 @@ kotlin {
             implementation(compose.components.resources)
 
 
-
         }
 
         desktopMain.dependencies {
@@ -85,6 +83,7 @@ kotlin {
             implementation("org.slf4j:slf4j-simple:2.0.9")
 
 
+
         }
     }
 }
@@ -101,12 +100,9 @@ compose.desktop {
 }
 
 tasks.withType<Test> {
-
-
     useJUnitPlatform() // Esto es necesario para usar JUnit 5
     jvmArgs("-XX:+EnableDynamicAgentLoading")
     testLogging {
         events("passed", "skipped", "failed")
     }
 }
-

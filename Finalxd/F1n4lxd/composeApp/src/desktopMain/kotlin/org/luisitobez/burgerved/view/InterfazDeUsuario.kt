@@ -260,6 +260,17 @@ class InterfazDeUsuario() : Screen {
                     Text("Cancelar", fontSize = 24.sp)
                 }
 
+                // Boton para ingresar codigo
+                Button(
+                    onClick = { navigator.push(IngresarCodigo(pedido)) },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier.width(105.dp)
+                ) {
+                    Text("Ingrese Codigo", fontSize = 17.sp)
+                }
+
                 Column {
                     Text(
                         text = "Precio: $${precioTotal}",

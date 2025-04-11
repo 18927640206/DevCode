@@ -10,6 +10,7 @@ import org.luisitobez.burgerved.model.data.PedidoProductoDAOImpl
 import org.luisitobez.burgerved.model.data.ProductoIngredienteDAOImpl
 import org.luisitobez.burgerved.model.data.UsuarioDAOImpl
 import org.luisitobez.burgerved.model.domain.ProductoIngredientes
+import org.luisitobez.burgerved.model.data.PedidoProgramadoDAOImpl
 
 class AppController {
     // Inicializa la conexión a la base de datos
@@ -22,13 +23,14 @@ class AppController {
     private val pedidoProductoDAO = PedidoProductoDAOImpl(conexionDB)
     private val productoIngredienteDAO = ProductoIngredienteDAOImpl(conexionDB)
     private val ingredientesExtraDAO = IngredientesExtraDAOImpl(conexionDB)
+    private val pedidoProgramadoDAO = PedidoProgramadoDAOImpl(conexionDB)
     private val usuarioDAO = UsuarioDAOImpl(conexionDB)
 
     // Inicializa los controladores
     val productoController = ProductoController(productoDAO, pedidoProductoDAO)
     val carritoController = CarritoController(pedidoDAO)
     val ingredienteController = IngredienteController(ingredienteDAO )
-    val pedidoController = PedidoController(pedidoDAO)
+    val pedidoController = PedidoController(pedidoDAO, pedidoProgramadoDAO)
     val productoIngredienteController = ProductoIngredienteController(productoIngredienteDAO)
     val ingredientesExtraController = IngredientesExtraController(ingredientesExtraDAO)
     val usuarioController = UsuarioController(usuarioDAO)
