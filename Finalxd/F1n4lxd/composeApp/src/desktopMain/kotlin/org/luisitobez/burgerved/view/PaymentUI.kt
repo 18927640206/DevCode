@@ -103,7 +103,6 @@ class PaymentUI(
                         "PayPal" -> {
                             // URL donde se encuentra tu archivo PHP para manejar el pago
                             val url = "http://localhost/curso/pasarela/index.php?totalAmount=${pedido.total_pago}"
-
                             // Verifica si el escritorio tiene la capacidad de abrir un navegador
                             if (Desktop.isDesktopSupported()) {
                                 val desktop = Desktop.getDesktop()

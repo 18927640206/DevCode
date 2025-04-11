@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,18 +20,27 @@ import org.luisitobez.burgerved.controller.CarritoController
 import org.luisitobez.burgerved.model.domain.Pedido
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
+import org.luisitobez.burgerved.controller.AppController
+import org.luisitobez.burgerved.model.domain.Pedido
+
 
 class PagoConfirmado(
-    private val pedido: Pedido
-) : Screen {
+    private var pedido: Pedido,
+)  : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val appController = remember { AppController() }
+        val carritoController = appController.carritoController
+
+        // Navegar automáticamente después de 3 segundos
+
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF28001)), // Fondo anaranjado
+                .background(Color(0xFFF28001)),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Encabezado
@@ -56,7 +67,7 @@ class PagoConfirmado(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp)) // Espacio superior
+                Spacer(modifier = Modifier.height(36.dp))
 
                 Text(
                     text = "Pago Confirmado",
@@ -64,7 +75,8 @@ class PagoConfirmado(
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.height(16.dp)) // Espacio entre el título y el mensaje
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Gracias por su compra!",
@@ -72,7 +84,6 @@ class PagoConfirmado(
                     color = Color.White,
                     modifier = Modifier.padding(bottom = 36.dp)
                 )
-
                 if (pedido.pedidoProgramado) {
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
@@ -98,12 +109,15 @@ class PagoConfirmado(
 
                 Spacer(modifier = Modifier.height(36.dp)) // Espacio inferior
 
+
+                // Botón de aceptar (opcional, puedes quitarlo si no lo necesitas)
                 Button(
-                    onClick = { navigator.replaceAll(InterfazDeUsuario()) },
+                    onClick = { navigator.push(ProcesandoPedidoScreen(pedido)) },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
                     shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Aceptar", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(8.dp))
+
+                ){
+                    Text("Aceptar", fontSize = 24.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
                 }
             }
 
@@ -125,7 +139,6 @@ class PagoConfirmado(
         }
     }
 }
-
 @Composable
 private fun LocalDateTime.formatHora(): String {
     return this.format(DateTimeFormatter.ofPattern("HH:mm"))

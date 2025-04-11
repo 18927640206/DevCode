@@ -6,11 +6,35 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+repositories {
+    maven("https://repo.repsy.io/mvn/chrynan/public") // Mockative repo
+    google()
+    mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") // Compose
+}
+
 kotlin {
     jvm("desktop")
 
     sourceSets {
         val desktopMain by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
+
+        val desktopTest by getting {
+
+                dependencies {
+                    implementation(libs.junit.junit)
+                    implementation(libs.junit.jupiter)
+                    implementation(libs.mockk.jvm)
+                    implementation(libs.slf4j.simple)
+                    implementation(libs.junit.jupiter.engine)
+                }
+
+        }
 
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -30,13 +54,18 @@ kotlin {
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.bottomSheetNavigator)
+
+
             implementation(libs.compose.material)
             implementation(compose.components.resources)
 
+
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+
             implementation(libs.mysql.connector.java)
             implementation(libs.exposed.core)
             implementation(libs.exposed.dao)
@@ -52,20 +81,20 @@ kotlin {
             implementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
             implementation("io.mockk:mockk:1.13.10") // versión estable para JVM
             implementation("org.slf4j:slf4j-simple:2.0.9")
+
+
+
         }
     }
 }
 
 compose.desktop {
-
     application {
         mainClass = "org.luisitobez.burgerved.MainKt"
-
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.luisitobez.burgerved"
             packageVersion = "1.0.0"
-
         }
     }
 }

@@ -3,6 +3,8 @@ package org.luisitobez.burgerved.model.data;
 import org.luisitobez.burgerved.model.domain.Pedido
 import java.sql.SQLException
 import java.sql.Statement
+import java.sql.Timestamp
+import java.time.LocalDateTime
 
 class PedidoDAOImpl (private val conexion : ConexionDB){
     //private val conexion = ConexionDB()
@@ -16,11 +18,16 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
                 conn.prepareStatement(sql).use { consulta ->
                     consulta.executeQuery().use { resultado ->
                         if (resultado.next()) {
+                            val timestamp = resultado.getTimestamp("fecha_hora")
+                            val fechaHora = timestamp?.toLocalDateTime() ?: LocalDateTime.now()
                             pedido = Pedido(
                                 id = resultado.getInt("id_pedido"),
                                 estado = resultado.getString("estado"),
                                 metodo_pago = resultado.getString("metodo_pago"),
-                                total_pago = resultado.getFloat("total_pago")
+                                total_pago = resultado.getFloat("total_pago"),
+                                fecha_hora = fechaHora,
+                                descuento = resultado.getFloat("descuento"),
+                                montoAhorrado = resultado.getFloat("monto_ahorrado")
                             )
                         }
                     }
@@ -36,9 +43,12 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
     fun addPedido(): Pedido {
         // Crear un pedido con valores iniciales
 
-        val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f, descuento = 0f, montoAhorrado = 0f)
+        val fechaHora = LocalDateTime.now()
+        val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f, fecha_hora = fechaHora, descuento = 0f, montoAhorrado = 0f)
 
-        val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago, descuento, monto_ahorrado) VALUES (?, ?, ?, ?, ?)"
+        //val pedido = Pedido(id = 0, estado = "activo", metodo_pago = "no definido", total_pago = 0.0f, descuento = 0f, montoAhorrado = 0f)
+
+        val sql = "INSERT INTO Pedido (estado, metodo_pago, total_pago, fecha_hora, descuento, monto_ahorrado) VALUES (?, ?, ?, ?, ?, ?)"
       
         var generatedId: Int? = null
 
@@ -56,8 +66,9 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
                 consulta.setString(1, pedido.estado)
                 consulta.setString(2, pedido.metodo_pago)
                 consulta.setFloat(3, pedido.total_pago)
-                consulta.setFloat(4, pedido.descuento)
-                consulta.setFloat(5, pedido.montoAhorrado)
+                consulta.setTimestamp(4, java.sql.Timestamp.valueOf(pedido.fecha_hora)) // Insertar la fecha y hora
+                consulta.setFloat(5, pedido.descuento)
+                consulta.setFloat(6, pedido.montoAhorrado)
                 
                 val rowsAffected = consulta.executeUpdate()
 
@@ -143,13 +154,14 @@ class PedidoDAOImpl (private val conexion : ConexionDB){
     }
 
     fun actualizarEstadoPedido(idPedido: Int, estado: String, metodoPago: String) {
-        val sql = "UPDATE Pedido SET estado = ?, metodo_pago = ? WHERE id_pedido = ?"
+        val sql = "UPDATE Pedido SET estado = ?, metodo_pago = ?, fecha_hora = ? WHERE id_pedido = ?"
         try {
             conexion.obtenerConexion()?.use { conn ->
                 conn.prepareStatement(sql).use { ps ->
                     ps.setString(1, estado)
                     ps.setString(2, metodoPago)
-                    ps.setInt(3, idPedido)
+                    ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()))
+                    ps.setInt(4, idPedido)
                     ps.executeUpdate()
                 }
             }

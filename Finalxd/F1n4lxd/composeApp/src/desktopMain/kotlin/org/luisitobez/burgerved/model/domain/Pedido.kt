@@ -7,6 +7,7 @@ data class Pedido(
     var estado: String,
     var metodo_pago: String,
     var total_pago: Float,
+    var fecha_hora: LocalDateTime,
     var descuento: Float = 0f,
     var montoAhorrado: Float = 0f,
     var pedidoProgramado: Boolean = false,
