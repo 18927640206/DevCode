@@ -83,6 +83,7 @@ class PedidoProgramadoDAOImpl(private val conexion: ConexionDB) {
             metodo_pago = rs.getString("metodo_pago"),
             total_pago = rs.getFloat("total_pago"),
             descuento = rs.getFloat("descuento"),
+            fecha_hora = rs.getTimestamp("fecha_hora").toLocalDateTime(),
             montoAhorrado = rs.getFloat("monto_ahorrado"),
             pedidoProgramado = rs.getBoolean("pedido_programado"),
             horaRecoger = rs.getTimestamp("hora_recoger")?.toLocalDateTime(),

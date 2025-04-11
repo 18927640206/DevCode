@@ -9,7 +9,7 @@ class ConexionDB {
     private var conexion: Connection? = null
 
     companion object {
-        const val URL = "jdbc:mysql://localhost:3307/burgervend"
+        const val URL = "jdbc:mysql://localhost/burgervend"
         const val USER = "root"
         const val PASSWORD = ""
         const val DRIVER = "com.mysql.cj.jdbc.Driver"
@@ -24,7 +24,7 @@ class ConexionDB {
         }
 
         try { // Se establece la conexión con la base de datos
-            conexion = DriverManager.getConnection(URL, USER, PASSWORD)
+            conexion = DriverManager.getConnection("$URL?user=$USER&password=$PASSWORD")
             println("Conexión completada con burgervend.")
         } catch (ex: SQLException) {
             println("No hay conexión con la base de datos.")
@@ -36,4 +36,5 @@ class ConexionDB {
         return conexion
     }
 }
+
 

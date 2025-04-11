@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import org.luisitobez.burgerved.controller.AppController
-import org.luisitobez.burgerved.model.domain.Pedido
+
 
 
 class PagoConfirmado(
