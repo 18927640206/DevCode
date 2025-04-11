@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,16 +14,23 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.coroutines.delay
 
 class PagoConfirmado : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
 
+        // Navegar automáticamente después de 3 segundos
+        LaunchedEffect(Unit) {
+            delay(3000L)
+            navigator.push(ProcesandoPedidoScreen())
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF28001)), // Fondo anaranjado
+                .background(Color(0xFFF28001)),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Encabezado
@@ -50,7 +57,7 @@ class PagoConfirmado : Screen {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp)) // Espacio superior
+                Spacer(modifier = Modifier.height(36.dp))
 
                 Text(
                     text = "Pago Confirmado",
@@ -58,7 +65,8 @@ class PagoConfirmado : Screen {
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.height(16.dp)) // Espacio entre el título y el mensaje
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Gracias por su compra!",
@@ -67,10 +75,11 @@ class PagoConfirmado : Screen {
                     modifier = Modifier.padding(bottom = 36.dp)
                 )
 
-                Spacer(modifier = Modifier.height(36.dp)) // Espacio inferior
+                Spacer(modifier = Modifier.height(36.dp))
 
+                // Botón de aceptar (opcional, puedes quitarlo si no lo necesitas)
                 Button(
-                    onClick = { navigator.replaceAll(InterfazDeUsuario()) },
+                    onClick = { navigator.push(ProcesandoPedidoScreen()) },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
                     shape = RoundedCornerShape(12.dp)
                 ) {

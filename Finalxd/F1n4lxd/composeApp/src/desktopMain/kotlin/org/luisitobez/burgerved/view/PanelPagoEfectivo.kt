@@ -110,7 +110,7 @@ class PanelPagoEfectivo(
                     if (insertedAmount >= pedido.total_pago){
                         carritoController.realizarPago(pedido, pedido.total_pago, "Efectivo")
                         println("Cambio devuelto: ${insertedAmount-pedido.total_pago}")
-                        navigator.push(PagoConfirmado())
+                        navigator.push(PagoConfirmado( ))
                     }
                 },
                     enabled = insertedAmount >= pedido.total_pago,

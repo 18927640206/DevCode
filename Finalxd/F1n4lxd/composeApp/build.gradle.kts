@@ -6,12 +6,33 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+repositories {
+    maven("https://repo.repsy.io/mvn/chrynan/public") // Mockative repo
+    google()
+    mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") // Compose
+}
+
 kotlin {
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
+
+        val desktopTest by getting {
+            dependencies {
+                implementation("org.junit.jupiter:junit-jupiter:5.9.2")
+                implementation("io.mockk:mockk:1.13.8")
+                implementation("io.mockk:mockk-agent-jvm:1.13.8")
+            }
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -30,31 +51,30 @@ kotlin {
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.bottomSheetNavigator)
-            implementation(libs.compose.material)
-            implementation(compose.components.resources)
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-            implementation(libs.mysql.connector.java)
-            implementation(libs.exposed.core)
-            implementation(libs.exposed.dao)
-            implementation(libs.exposed.jdbc)
         }
     }
 }
 
 
 compose.desktop {
-    
     application {
         mainClass = "org.luisitobez.burgerved.MainKt"
-
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.luisitobez.burgerved"
             packageVersion = "1.0.0"
-
         }
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform() // Usar JUnit 5
+    testLogging {
+        events("passed", "skipped", "failed")
     }
 }
