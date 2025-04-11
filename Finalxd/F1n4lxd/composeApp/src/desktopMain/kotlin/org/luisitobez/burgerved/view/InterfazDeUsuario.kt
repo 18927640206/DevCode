@@ -72,6 +72,7 @@ class InterfazDeUsuario() : Screen {
                 .onKeyEvent { keyEvent ->
                     if (keyEvent.isCtrlPressed) {
                         botonAdmin = true// Alternar estado con Ctrl+A
+                        println("Hola")
                         true
                     } else {
                         botonAdmin = false// Alternar estado con Ctrl+A
@@ -254,7 +255,7 @@ class InterfazDeUsuario() : Screen {
                     carritoController.eliminarPedido(pedido)
                     pedido = appController.pedidoController.agregarPedido()!!
                     productospedido = productoController.pedirPedidoProductos(pedido)
-                },  enabled = productospedido.isNotEmpty()
+                },  //enabled = productospedido.isNotEmpty()
                     ) {
                     Text("Cancelar", fontSize = 24.sp)
                 }
