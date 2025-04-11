@@ -22,20 +22,17 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
-
             }
         }
 
         val desktopTest by getting {
-            val desktopTest by getting {
                 dependencies {
                     implementation(libs.junit.junit)
                     implementation(libs.junit.jupiter)
-
                     implementation(libs.mockk.jvm)
-
+                    implementation(libs.slf4j.simple)
+                    implementation(libs.junit.jupiter.engine)
                 }
-            }
         }
 
         commonMain.dependencies {

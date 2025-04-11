@@ -33,6 +33,19 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.luisitobez.burgerved.controller.AppController
 
+/**
+ * Pantalla para modificar el stock de ingredientes.
+ *
+ * Esta pantalla muestra una lista de todos los ingredientes disponibles con su stock actual,
+ * permitiendo al usuario actualizar las cantidades individualmente o en conjunto.
+ *
+ * La interfaz está dividida en tres secciones principales:
+ * 1. Encabezado con el título de la pantalla
+ * 2. Lista desplazable de ingredientes con campos de entrada para modificar cantidades
+ * 3. Pie de página con botones para guardar todos los cambios o cancelar
+ *
+ * @constructor Crea una instancia de la pantalla de modificación de ingredientes
+ */
 class ModificarIngredientes: Screen {
     @Composable
     override fun Content() {
@@ -55,7 +68,7 @@ class ModificarIngredientes: Screen {
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Encabezado
+            // Sección 1: Encabezado
             Surface(
                 color = Color(0xFF042E46),
                 modifier = Modifier.fillMaxWidth().height(100.dp)
@@ -73,7 +86,7 @@ class ModificarIngredientes: Screen {
                 }
             }
 
-            // Lista de ingredientes
+            // Sección 2: Lista de ingredientes con campos de modificación
             LazyColumn(
                 modifier = Modifier.weight(1f).background(Color(0xFFF28001)).fillMaxWidth()
             ) {
@@ -125,7 +138,7 @@ class ModificarIngredientes: Screen {
                             textStyle = TextStyle(fontSize = 16.sp)
                         )
 
-                        // Botón para actualizar
+                        // Botón para actualización individual
                         Button(
                             onClick = {
                                 val nuevaCantidadStr = cantidadesTemporales[index] ?: ""
@@ -149,7 +162,7 @@ class ModificarIngredientes: Screen {
                 }
             }
 
-            // Pie de página
+            // Sección 3: Pie de página con acciones globales
             Surface(
                 color = Color(0xFF042E46),
                 modifier = Modifier.fillMaxWidth().height(100.dp)
@@ -162,6 +175,7 @@ class ModificarIngredientes: Screen {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Botón para guardar todos los cambios
                     Button(
                         onClick = {
                             // Actualizar todos los ingredientes con valores modificados
@@ -179,14 +193,13 @@ class ModificarIngredientes: Screen {
                             }
                             navigator.pop()
                         },
-
                     ) {
                         Text("Guardar Todo", fontSize = 24.sp)
                     }
 
+                    // Botón para cancelar y volver atrás
                     Button(
                         onClick = { navigator.pop() },
-
                     ) {
                         Text("Cancelar", fontSize = 24.sp)
                     }

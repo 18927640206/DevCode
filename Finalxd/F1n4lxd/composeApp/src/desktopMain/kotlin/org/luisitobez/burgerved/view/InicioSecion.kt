@@ -36,6 +36,18 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.luisitobez.burgerved.controller.AppController
 import org.luisitobez.burgerved.controller.UsuarioController
 
+/**
+ * Pantalla de inicio de sesión para administradores.
+ *
+ * Esta pantalla permite a los usuarios autenticarse para acceder al modo administrador.
+ * Presenta un formulario con campos para usuario y contraseña, validación de credenciales
+ * y navegación a otras pantallas según el estado de autenticación.
+ *
+ * La interfaz se divide en tres secciones principales:
+ * 1. Encabezado con el título de la aplicación
+ * 2. Formulario de inicio de sesión o menú de administrador (según estado de autenticación)
+ * 3. Pie de página con botón para salir de la aplicación
+ */
 class InicioSesion : Screen {
     @Composable
     override fun Content() {
@@ -47,20 +59,19 @@ class InicioSesion : Screen {
         val usuario = remember { mutableStateOf("") }
         val contrasena = remember { mutableStateOf("") }
         val errorMensaje = remember { mutableStateOf<String?>(null) }
-        var estado by rememberSaveable() { mutableStateOf(usuarioController.administrarSesion("", "s")) }
-
+        var estado by rememberSaveable { mutableStateOf(usuarioController.administrarSesion("", "s")) }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF28001)),
+                .background(Color(0xFFF28001)), // Color naranja de fondo
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Título
+            // Sección 1: Encabezado con título
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF042E46))
+                    .background(Color(0xFF042E46)) // Color azul oscuro
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -71,7 +82,10 @@ class InicioSesion : Screen {
                     color = Color.White
                 )
             }
-            if (!estado){
+
+            // Sección 2: Contenido principal (formulario o menú según autenticación)
+            if (!estado) {
+                // Formulario de inicio de sesión
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -130,16 +144,17 @@ class InicioSesion : Screen {
                     // Botón de inicio de sesión
                     Button(
                         onClick = {
-                            // Validación básica
+                            // Validación del formulario
                             when {
-                                usuario.value.isEmpty() -> errorMensaje.value = "Ingrese un usuario"
-                                contrasena.value.isEmpty() -> errorMensaje.value = "Ingrese una contraseña"
+                                usuario.value.isEmpty() ->
+                                    errorMensaje.value = "Ingrese un usuario"
+                                contrasena.value.isEmpty() ->
+                                    errorMensaje.value = "Ingrese una contraseña"
                                 !usuarioController.administrarSesion(usuario.value, contrasena.value) -> {
                                     errorMensaje.value = "Usuario o contraseña incorrectos"
                                 }
                                 else -> {
-                                    // Credenciales correctas - navegar a la pantalla principal del admin
-                                    // navigator.push(AdminHomeScreen())
+                                    // Autenticación exitosa
                                     errorMensaje.value = null
                                     estado = true
                                 }
@@ -153,19 +168,19 @@ class InicioSesion : Screen {
                         }
                     )
                 }
-            }else{
+            } else {
+                // Menú de administrador (post-autenticación)
                 Column {
-                    Button(onClick = {
-                        navigator.push(ModificarIngredientes())
-                    }
-                    ){
+                    Button(
+                        onClick = { navigator.push(ModificarIngredientes()) },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         Text("Modificar Ingredientes")
                     }
                 }
             }
 
-
-            // Panel inferior (botón SALIR)
+            // Sección 3: Pie de página con botón de salida
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,9 +189,9 @@ class InicioSesion : Screen {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = {
-                    navigator.pop()
-                }) {
+                Button(
+                    onClick = { navigator.pop() }
+                ) {
                     Text("SALIR", fontSize = 24.sp)
                 }
             }
