@@ -2,6 +2,7 @@ package org.luisitobez.burgerved.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,8 +10,13 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +28,7 @@ import org.luisitobez.burgerved.model.domain.PedidoProductos
 import org.luisitobez.burgerved.view.ReporteProblemas
 
 class InterfazDeUsuario() : Screen {
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun Content() {
         val appController = remember { AppController() }
@@ -32,11 +39,13 @@ class InterfazDeUsuario() : Screen {
         var contador by rememberSaveable { mutableStateOf(0) }
         var productospedido by remember { mutableStateOf<List<PedidoProductos>>(emptyList()) }
         var precioTotal by remember { mutableStateOf(0.0f) }
+        val focusRequester = remember { FocusRequester() }
 
         var notificarDescuento by remember { mutableStateOf("") }
         var pedidoConDescuento by rememberSaveable { mutableStateOf(pedido) }
         var montoAhorrado by rememberSaveable { mutableStateOf(0f) }
         var totalConDescuento by rememberSaveable { mutableStateOf(0f) }
+        var botonAdmin by remember { mutableStateOf(false) }
 
         // Obtener productos y bebidas
         val productos = productoController.obtenerTodosProductos()
@@ -52,24 +61,62 @@ class InterfazDeUsuario() : Screen {
             montoAhorrado = pedidoConDescuento.montoAhorrado
             totalConDescuento = pedidoConDescuento.total_pago
         }
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+
         Column(
-            modifier = Modifier.fillMaxSize().background(Color(0xFFF28001)),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF28001))
+                .focusable()
+                .focusRequester(focusRequester)
+                .onKeyEvent { keyEvent ->
+                    if (keyEvent.isCtrlPressed) {
+                        botonAdmin = true// Alternar estado con Ctrl+A
+                        println("Hola")
+                        true
+                    } else {
+                        botonAdmin = false// Alternar estado con Ctrl+A
+                        false
+                    }
+                },
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Título
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFF042E46))
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "BurguerVend",
-                    fontSize = 60.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+            if(botonAdmin){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF042E46))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BurguerVend: Modo admin",
+                        fontSize = 60.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+                Button(onClick = {navigator.push(InicioSesion())}) {
+                    Text("Iniciar Secion", fontSize = 24.sp)
+                }
+            }else{
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF042E46))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BurguerVend",
+                        fontSize = 60.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
 
             // Panel central
@@ -213,7 +260,6 @@ class InterfazDeUsuario() : Screen {
                     .background(Color(0xFF042E46))
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,

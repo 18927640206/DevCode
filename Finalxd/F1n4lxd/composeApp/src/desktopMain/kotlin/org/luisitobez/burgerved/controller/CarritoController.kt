@@ -4,7 +4,9 @@ package org.luisitobez.burgerved.controller
 import org.luisitobez.burgerved.model.data.PedidoDAOImpl
 import org.luisitobez.burgerved.model.domain.Pedido
 
-class CarritoController(private val pedidoDAO: PedidoDAOImpl) {
+class CarritoController(
+    private val pedidoDAO: PedidoDAOImpl
+) {
 
     fun agregarPedido(): Pedido {
         return pedidoDAO.addPedido()

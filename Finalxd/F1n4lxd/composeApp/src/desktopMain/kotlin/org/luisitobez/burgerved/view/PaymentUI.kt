@@ -17,11 +17,13 @@ import kotlinx.coroutines.delay
 import org.luisitobez.burgerved.model.domain.Pedido
 import org.luisitobez.burgerved.model.domain.Producto
 import org.luisitobez.burgerved.controller.AppController
+import org.luisitobez.burgerved.model.domain.EstadoProgramado
 import java.awt.Desktop
 import java.net.URI
+import java.time.LocalDateTime
 
 class PaymentUI(
-    private val pedido: Pedido,
+    private var pedido: Pedido,
 ) : Screen {
     @Composable
     override fun Content() {
@@ -29,6 +31,7 @@ class PaymentUI(
 
         val appController = remember { AppController() }
         val carritoController = appController.carritoController
+        val pedidoController = appController.pedidoController
         var confirmationMessage by remember { mutableStateOf("") }
         var selectedPaymentMethod by remember { mutableStateOf("Efectivo") } // Valor por defecto
 
@@ -100,7 +103,6 @@ class PaymentUI(
                         "PayPal" -> {
                             // URL donde se encuentra tu archivo PHP para manejar el pago
                             val url = "http://localhost/curso/pasarela/index.php?totalAmount=${pedido.total_pago}"
-
                             // Verifica si el escritorio tiene la capacidad de abrir un navegador
                             if (Desktop.isDesktopSupported()) {
                                 val desktop = Desktop.getDesktop()
@@ -120,6 +122,23 @@ class PaymentUI(
                     Text("Confirmar Pago", fontSize = 24.sp)
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Boton para programar pedido
+                Button(
+                    onClick = {
+                        navigator.push(ProgramarPedido(
+                            pedido = pedido,
+                            pedidoController = pedidoController,
+                            onTimeSelected = { pedidoProgramado ->
+                            pedido = pedidoProgramado
+                            navigator.push(PagoConfirmado(pedidoProgramado))
+                            navigator.pop()
+                        }))
+                    }
+                ) {
+                    Text("Programar Pedido", fontSize = 24.sp)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (confirmationMessage.isNotEmpty()) {
