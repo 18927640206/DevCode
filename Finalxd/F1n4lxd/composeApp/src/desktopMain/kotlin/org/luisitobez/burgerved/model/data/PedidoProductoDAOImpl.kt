@@ -14,7 +14,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
         contadorDeProducto: Int
     ): PedidoProductos? {
         val sql =
-            "SELECT * FROM pedido_detalles WHERE id_pedido = ? AND id_producto = ? AND id_modificacion = ?"
+            "SELECT * FROM Pedido_Detalles WHERE id_pedido = ? AND id_producto = ? AND id_modificacion = ?"
         var pedidoProducto: PedidoProductos? = null
 
         try {
@@ -45,7 +45,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
 
     fun addProducto(pedido: Pedido, producto: Producto) {
         val sql =
-            "INSERT INTO pedido_detalles (id_pedido, id_producto, id_modificacion, precio_unitario) VALUES (?, ?, ?, ?)"
+            "INSERT INTO Pedido_Detalles (id_pedido, id_producto, id_modificacion, precio_unitario) VALUES (?, ?, ?, ?)"
         val hola = obtenerUltimoPedidoDeProducto(pedido) + 1
 
         try {
@@ -72,7 +72,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
 
     fun obtenerUltimoPedidoDeProducto(pedido: Pedido): Int {
         val sql =
-            "SELECT MAX(id_modificacion) AS maximiliano FROM pedido_detalles WHERE id_pedido = ?"
+            "SELECT MAX(id_modificacion) AS maximiliano FROM Pedido_Detalles WHERE id_pedido = ?"
         var numeroMasAlto = 0
 
         try {
@@ -96,7 +96,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
 
     fun borrarProducto(pedidoProducto: PedidoProductos) {
         val sql =
-            "DELETE FROM pedido_detalles WHERE id_pedido = ? AND id_producto = ? AND id_modificacion = ?"
+            "DELETE FROM Pedido_Detalles WHERE id_pedido = ? AND id_producto = ? AND id_modificacion = ?"
 
         try {
             conexion.obtenerConexion()?.use { conn ->
@@ -117,7 +117,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
 
     fun obtenerProductos(pedido: Pedido): List<PedidoProductos> {
         val pedidoProducto = mutableListOf<PedidoProductos>()
-        val sql = "SELECT * FROM pedido_detalles WHERE id_pedido = ?"
+        val sql = "SELECT * FROM Pedido_Detalles WHERE id_pedido = ?"
 
         try {
             conexion.obtenerConexion()?.use { conn ->
@@ -149,7 +149,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
     fun obtenerTotal(pedido: Pedido): Float {
         var total = 0.0f
         val sql =
-            "SELECT SUM(precio_unitario) AS total_pedido FROM pedido_detalles WHERE id_pedido = ?"
+            "SELECT SUM(precio_unitario) AS total_pedido FROM Pedido_Detalles WHERE id_pedido = ?"
 
         try {
             conexion.obtenerConexion()?.use { conn ->
@@ -173,7 +173,7 @@ class PedidoProductoDAOImpl ( private val conexion : ConexionDB) {
     }
 
     fun cambiarPrecio(pedidoProducto: PedidoProductos, precioFinal: Float) {
-        val sql = "UPDATE pedido_detalles SET precio_unitario = ? WHERE id_modificacion = ?"
+        val sql = "UPDATE Pedido_Detalles SET precio_unitario = ? WHERE id_modificacion = ?"
 
         try {
             conexion.obtenerConexion()?.use { conn ->

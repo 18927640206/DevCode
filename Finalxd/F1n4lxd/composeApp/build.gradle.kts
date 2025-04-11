@@ -18,14 +18,15 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
+
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
+
             }
         }
 
         val desktopTest by getting {
-
                 dependencies {
                     implementation(libs.junit.junit)
                     implementation(libs.junit.jupiter)
@@ -33,7 +34,6 @@ kotlin {
                     implementation(libs.slf4j.simple)
                     implementation(libs.junit.jupiter.engine)
                 }
-
         }
 
         commonMain.dependencies {
@@ -58,8 +58,7 @@ kotlin {
 
             implementation(libs.compose.material)
             implementation(compose.components.resources)
-
-
+            implementation(libs.jakarta.mail)
         }
 
         desktopMain.dependencies {
@@ -70,6 +69,7 @@ kotlin {
             implementation(libs.exposed.core)
             implementation(libs.exposed.dao)
             implementation(libs.exposed.jdbc)
+            implementation(libs.jakarta.mail)
             implementation("com.itextpdf:itextpdf:5.5.13.3")
             implementation ("com.google.zxing:core:3.4.1")
             implementation ("com.google.zxing:javase:3.4.1")
@@ -81,8 +81,6 @@ kotlin {
             implementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
             implementation("io.mockk:mockk:1.13.10") // versión estable para JVM
             implementation("org.slf4j:slf4j-simple:2.0.9")
-
-
 
         }
     }
@@ -100,6 +98,7 @@ compose.desktop {
 }
 
 tasks.withType<Test> {
+
     useJUnitPlatform() // Esto es necesario para usar JUnit 5
     jvmArgs("-XX:+EnableDynamicAgentLoading")
     testLogging {

@@ -9,7 +9,7 @@ class ConexionDB {
     private var conexion: Connection? = null
 
     companion object {
-        const val URL = "jdbc:mysql://localhost/burgervend"
+        const val URL = "jdbc:mysql://localhost/BurgerVend"
         const val USER = "root"
         const val PASSWORD = ""
         const val DRIVER = "com.mysql.cj.jdbc.Driver"

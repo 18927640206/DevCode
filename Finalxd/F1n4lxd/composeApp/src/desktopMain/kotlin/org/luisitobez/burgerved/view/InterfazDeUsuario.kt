@@ -25,6 +25,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.luisitobez.burgerved.controller.AppController
 import org.luisitobez.burgerved.model.domain.PedidoProductos
+import org.luisitobez.burgerved.view.ReporteProblemas
 
 class InterfazDeUsuario() : Screen {
     @OptIn(ExperimentalComposeUiApi::class)
@@ -55,7 +56,8 @@ class InterfazDeUsuario() : Screen {
         // Actualizar el precio total cuando cambie la lista de productos
         LaunchedEffect(productospedido) {
             precioTotal = productospedido.sumOf { it.precioUnitario.toDouble() }.toFloat()
-            pedidoConDescuento = carritoController.aplicarDescuento(pedido.copy(total_pago = precioTotal), contador)
+            pedidoConDescuento =
+                carritoController.aplicarDescuento(pedido.copy(total_pago = precioTotal), contador)
             montoAhorrado = pedidoConDescuento.montoAhorrado
             totalConDescuento = pedidoConDescuento.total_pago
         }
@@ -151,9 +153,14 @@ class InterfazDeUsuario() : Screen {
                                         onAddToCart = {
                                             contador++
 
-                                            productoController.agregarProductoAPedido(pedido, producto)
-                                            productospedido = productoController.pedirPedidoProductos(pedido)
-                                            notificarDescuento = carritoController.notificarDescuento(contador)
+                                            productoController.agregarProductoAPedido(
+                                                pedido,
+                                                producto
+                                            )
+                                            productospedido =
+                                                productoController.pedirPedidoProductos(pedido)
+                                            notificarDescuento =
+                                                carritoController.notificarDescuento(contador)
                                         }
                                     )
                                 }
@@ -180,8 +187,12 @@ class InterfazDeUsuario() : Screen {
                                         producto = producto,
                                         onAddToCart = {
                                             contador++
-                                            productoController.agregarProductoAPedido(pedido, producto)
-                                            productospedido = productoController.pedirPedidoProductos(pedido)
+                                            productoController.agregarProductoAPedido(
+                                                pedido,
+                                                producto
+                                            )
+                                            productospedido =
+                                                productoController.pedirPedidoProductos(pedido)
                                         }
                                     )
                                 }
@@ -204,21 +215,23 @@ class InterfazDeUsuario() : Screen {
                                 onRemove = {
                                     try {
                                         productoController.eliminarProductoAPedido(producto)
-                                        productospedido = productoController.pedirPedidoProductos(pedido)
+                                        productospedido =
+                                            productoController.pedirPedidoProductos(pedido)
                                     } catch (e: Exception) {
                                         println("Error al eliminar el producto del pedido: ${e.message}")
                                     }
                                 },
                                 onIngredientesClick = {
-                                    productoController.obtenerProductoPorId("${producto.idProducto}")?.let {
-                                        navigator.push(
-                                            SeleccionIngrediente(
-                                                it,
-                                                pedido,
-                                                producto
+                                    productoController.obtenerProductoPorId("${producto.idProducto}")
+                                        ?.let {
+                                            navigator.push(
+                                                SeleccionIngrediente(
+                                                    it,
+                                                    pedido,
+                                                    producto
+                                                )
                                             )
-                                        )
-                                    }
+                                        }
                                 }
                             )
                         }
@@ -241,63 +254,84 @@ class InterfazDeUsuario() : Screen {
                 )
             }
 
-            // Panel de pago
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF042E46))
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                Button(onClick = {
-                    precioTotal = 0.0f
-                    carritoController.eliminarPedido(pedido)
-                    pedido = appController.pedidoController.agregarPedido()!!
-                    productospedido = productoController.pedirPedidoProductos(pedido)
-                },  //enabled = productospedido.isNotEmpty()
-                    ) {
-                    Text("Cancelar", fontSize = 24.sp)
-                }
-
-                // Boton para ingresar codigo
-                Button(
-                    onClick = { navigator.push(IngresarCodigo(pedido)) },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier.width(105.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Ingrese Codigo", fontSize = 17.sp)
-                }
 
-                Column {
-                    Text(
-                        text = "Precio: $${precioTotal}",
-                        fontSize = 20.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Descuento: $${montoAhorrado}",
-                        fontSize = 20.sp,
-                        color = Color.White,
-                    )
-                    Text(
-                        text = "Total a pagar: $${totalConDescuento}",
-                        fontSize = 24.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Button(onClick = {
-                    pedido.total_pago = totalConDescuento
-                    carritoController.actualizarPrecioPedido(pedido, totalConDescuento)
-                    navigator.push(SugerenciasUI(pedido, productospedido, montoAhorrado))
-                },  enabled = productospedido.isNotEmpty()
+                    Column(
+                        modifier = Modifier.width(120.dp)
                     ) {
-                    Text("Pagar", fontSize = 24.sp)
+                        // Botón Reportar
+                        Button(
+                            onClick = { navigator.push(ReporteProblemas(pedido)) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(36.dp)
+                                .padding(bottom = 4.dp)
+                        ) {
+                            Text("Reportar", fontSize = 16.sp)
+                        }
+
+                        // Botón Cancelar
+                        Button(
+                            onClick = {
+                                precioTotal = 0.0f
+                                carritoController.eliminarPedido(pedido)
+                                pedido = appController.pedidoController.agregarPedido()!!
+                                productospedido = productoController.pedirPedidoProductos(pedido)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                        ) {
+                            Text("Cancelar", fontSize = 16.sp)
+                        }
+                    }
+
+                    // Precios (centro)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Precio: $${precioTotal}",
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Descuento: $${montoAhorrado}",
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Total a pagar: $${totalConDescuento}",
+                            fontSize = 24.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    // Botón Pagar
+                    Button(
+                        onClick = {
+                            pedido.total_pago = totalConDescuento
+                            carritoController.actualizarPrecioPedido(pedido, totalConDescuento)
+                            navigator.push(SugerenciasUI(pedido, productospedido, montoAhorrado))
+                        }
+                    ) {
+                        Text("Pagar", fontSize = 24.sp)
+                    }
                 }
             }
         }
+
     }
 }
