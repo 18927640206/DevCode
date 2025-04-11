@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.luisitobez.burgerved.controller.AppController
 import org.luisitobez.burgerved.model.domain.Pedido
 
+
 class PagoConfirmado(
     private var pedido: Pedido,
 )  : Screen {
@@ -27,10 +28,16 @@ class PagoConfirmado(
         val appController = remember { AppController() }
         val carritoController = appController.carritoController
 
+        // Navegar automáticamente después de 3 segundos
+        LaunchedEffect(Unit) {
+            delay(3000L)
+            navigator.push(ProcesandoPedidoScreen())
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF28001)), // Fondo anaranjado
+                .background(Color(0xFFF28001)),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Encabezado
@@ -57,7 +64,7 @@ class PagoConfirmado(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp)) // Espacio superior
+                Spacer(modifier = Modifier.height(36.dp))
 
                 Text(
                     text = "Pago Confirmado",
@@ -65,7 +72,8 @@ class PagoConfirmado(
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.height(16.dp)) // Espacio entre el título y el mensaje
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Gracias por su compra!",
@@ -74,14 +82,15 @@ class PagoConfirmado(
                     modifier = Modifier.padding(bottom = 36.dp)
                 )
 
-                Spacer(modifier = Modifier.height(36.dp)) // Espacio inferior
+                Spacer(modifier = Modifier.height(36.dp))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+
+                // Botón de aceptar (opcional, puedes quitarlo si no lo necesitas)
+                Button(
+                    onClick = { navigator.push(ProcesandoPedidoScreen()) },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6A0DAD)),
+                    shape = RoundedCornerShape(12.dp)
+
                 ) {
                     // Botón "Aceptar"
                     Button(

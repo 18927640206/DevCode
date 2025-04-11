@@ -26,6 +26,7 @@ kotlin {
         }
 
         val desktopTest by getting {
+
                 dependencies {
                     implementation(libs.junit.junit)
                     implementation(libs.junit.jupiter)
@@ -33,6 +34,7 @@ kotlin {
                     implementation(libs.slf4j.simple)
                     implementation(libs.junit.jupiter.engine)
                 }
+
         }
 
         commonMain.dependencies {
@@ -54,8 +56,10 @@ kotlin {
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.bottomSheetNavigator)
 
+
             implementation(libs.compose.material)
             implementation(compose.components.resources)
+
 
 
         }
@@ -80,6 +84,7 @@ kotlin {
             implementation("io.mockk:mockk:1.13.10") // versión estable para JVM
             implementation("org.slf4j:slf4j-simple:2.0.9")
 
+
         }
     }
 }
@@ -97,9 +102,11 @@ compose.desktop {
 
 tasks.withType<Test> {
 
+
     useJUnitPlatform() // Esto es necesario para usar JUnit 5
     jvmArgs("-XX:+EnableDynamicAgentLoading")
     testLogging {
         events("passed", "skipped", "failed")
     }
 }
+
